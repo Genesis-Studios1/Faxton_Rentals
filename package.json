@@ -1,0 +1,15 @@
+{
+  "name": "faxton-rentals-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static information site for Faxton Rentals: waitlist, app downloads, features, contact, about and billing. No build step.",
+  "type": "module",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "test": "node tests/waitlist.test.mjs && node tests/download.test.mjs && node tools/check-links.mjs",
+    "test:browser": "node tests/browser.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.56.0"
+  }
+}

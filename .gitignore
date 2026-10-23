@@ -1,0 +1,8 @@
+# Design reference images are not shipped
+_refs/
+# Local tooling and build output
+node_modules
+_site/
+.DS_Store
+*.log
+tests/out/

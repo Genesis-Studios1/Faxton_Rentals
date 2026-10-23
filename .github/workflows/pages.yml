@@ -1,0 +1,63 @@
+# Publishes the website to GitHub Pages.
+# One-time setup: repository Settings > Pages > Build and deployment > Source: "GitHub Actions".
+# (If you would rather publish straight from the branch, choose "Deploy from a branch", main, / (root) instead
+#  and delete this file. The site works either way.)
+name: Deploy website to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Check the code and the links
+        run: |
+          node tests/waitlist.test.mjs
+          node tests/download.test.mjs
+          node tools/check-links.mjs
+
+      - name: Assemble the site folder
+        run: |
+          mkdir _site
+          tar -cf - \
+            --exclude=./.git --exclude=./.github --exclude=./tests --exclude=./tools \
+            --exclude=./_site --exclude=./_refs --exclude=./node_modules \
+            --exclude=./README.md --exclude=./.gitignore --exclude=./package.json --exclude=./package-lock.json \
+            . | tar -xf - -C _site
+
+      - name: Point canonical links, share cards and the sitemap at the real address
+        run: node tools/set-site-url.mjs "${{ steps.pages.outputs.base_url }}" _site
+
+      - name: Upload the site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

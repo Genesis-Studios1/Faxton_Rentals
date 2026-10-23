@@ -1,0 +1,18 @@
+{
+  "name": "Faxton Rentals",
+  "short_name": "Faxton",
+  "description": "A smarter, safer way to find and rent a home in Nigeria. Launching in Lagos.",
+  "lang": "en-NG",
+  "start_url": "./",
+  "scope": "./",
+  "display": "browser",
+  "background_color": "#06281e",
+  "theme_color": "#06281e",
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "assets/icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "assets/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "assets/icons/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# The sitemap line is added for you by tools/set-site-url.mjs (the GitHub Pages workflow runs it).
+# Sitemap: https://example.com/sitemap.xml
