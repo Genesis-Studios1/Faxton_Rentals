@@ -9,7 +9,7 @@ const DEFAULTS = {
   ADDRESS: "",
   SOCIALS: { instagram: "", linkedin: "", x: "", youtube: "", tiktok: "", pinterest: "" },
   RELEASES_REPO: "musazaneerah4-crypto/Faxton-Rentals-Downloads",
-  SITE_VERSION: "1.0.0",
+  SITE_VERSION: "2026-10-26.1",
   FIREBASE: { projectId: "faxton-rentals", apiKey: "" },
 };
 
