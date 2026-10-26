@@ -34,7 +34,7 @@ window.FAXTON_SITE = Object.freeze({
   RELEASES_REPO: "musazaneerah4-crypto/Faxton-Rentals-Downloads",
 
   // Shown in the footer.
-  SITE_VERSION: "2026-10-22.1",
+  SITE_VERSION: "2026-10-26.1",
 
   // Waitlist and contact messages are saved in the Faxton Firestore project with the
   // public web key (the same one the app uses; access is controlled by Firestore rules).
