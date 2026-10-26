@@ -72,7 +72,12 @@ for (const file of walk(root).filter((f) => f.endsWith(".html"))) {
 const sm = join(root, "sitemap.xml");
 if (existsSync(sm)) {
   // each <loc> becomes <your address> + the page it stands for (works again after a previous run)
-  const x = readFileSync(sm, "utf8").replace(/<loc>[^<]*?(?:\/(features|contact|about|billing)\/)?<\/loc>/g, (_, page) => `<loc>${base}/${page ? page + "/" : ""}</loc>`);
+  const x = readFileSync(sm, "utf8").replace(/<loc>([^<]*)<\/loc>/g, (_, oldUrl) => {
+    let pathname = "/";
+    try { pathname = new URL(oldUrl, `${base}/`).pathname; } catch {}
+    const page = pathname.match(/\/(features|contact|about|billing)\/?$/)?.[1];
+    return `<loc>${base}/${page ? page + "/" : ""}</loc>`;
+  });
   writeFileSync(sm, x); console.log("updated sitemap.xml");
 }
 const rb = join(root, "robots.txt");
