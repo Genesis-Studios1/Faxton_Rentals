@@ -1,8 +1,8 @@
-# Faxton Rentals website
+# Faxton Homes — Faxton Rentals website
 
-The public information site for **Faxton Rentals**, a rental marketplace launching in Lagos, Nigeria.
-It shows the important information, lets people **join the waitlist**, and lets them **download the apps**.
-There is no login anywhere: the product itself is the Faxton app.
+This is the public information website for **Faxton Rentals**, the rental marketplace product operated under the **Faxton Homes** business name. Faxton Homes is the agreed business name; any formal legal status depends on registration approval. Faxton Rentals remains the app and customer-facing brand.
+
+The site shares product information, lets people **join the waitlist**, and lets them **download the apps**. There is no login on this website: the product itself is the Faxton app.
 
 Plain HTML, CSS and JavaScript. No framework, no build step, no analytics, no cookies, no third-party scripts.
 
