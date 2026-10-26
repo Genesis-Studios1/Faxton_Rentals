@@ -29,6 +29,8 @@ jobs:
         uses: actions/configure-pages@v5
         with:
           enablement: true
+        with:
+          enablement: true
 
       - name: Check the code and the links
         run: |
