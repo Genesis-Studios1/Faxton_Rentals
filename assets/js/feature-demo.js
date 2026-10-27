@@ -82,7 +82,9 @@ if (root) {
   root.querySelectorAll("[data-demo-action]").forEach((button) => {
     button.addEventListener("click", () => {
       const action = button.dataset.demoAction;
-      if (action === "attach") {
+      if (action === "back") {
+        notify("You are viewing a sample conversation.");
+      } else if (action === "attach") {
         const file = document.createElement("article");
         file.className = "frf-msg frf-msg--outgoing frf-msg--attachment";
         file.innerHTML = '<span class="frf-demo-doc" aria-hidden="true">PDF</span><span class="frf-demo-doc-copy"><b>Property floor plan.pdf</b><small>471 KB · Sample file</small></span>';
@@ -110,7 +112,7 @@ if (root) {
       const playing = voice.classList.toggle("is-playing");
       voice.setAttribute("aria-pressed", String(playing));
       voice.querySelector("[data-voice-icon]").innerHTML = playing
-        ? '<use href="../assets/img/sprite.svg#pause"/>'
+        ? '<path d="M9 5v14M15 5v14"/>'
         : '<use href="../assets/img/sprite.svg#play"/>';
       notify(playing ? "Playing sample voice note…" : "Voice note paused.");
       window.clearTimeout(voiceTimer);
