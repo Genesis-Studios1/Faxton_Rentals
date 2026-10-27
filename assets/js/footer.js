@@ -48,7 +48,7 @@ function openPrivacyChoices() {
       <div class="pc-row"><span><b>Analytics</b><small>None on this website.</small></span><span class="pc-sw" role="img" aria-label="Off"></span></div>
       <div class="pc-links">
         <button type="button" data-clear>Clear what this site stored on my device</button>
-        <a href="${esc(CONFIG.APP_URL)}/#/privacy" target="_blank" rel="noopener">Read the Privacy Policy</a>
+        <a href="${esc((document.body.dataset.root || "") + "privacy/")}">Read the Privacy Policy</a>
       </div>
       <div class="fx-modal__act"><button type="button" class="btn btn-dark" data-close>Done</button></div>
     </div>`;
