@@ -133,14 +133,6 @@ async function navigate(input, options) {
     window.setTimeout(() => { if (main) main.classList.remove("spa-entering"); }, 220);
     document.dispatchEvent(new CustomEvent("fx:pagechange", { detail: { url: url.href, page: document.body.dataset.page } }));
     scrollToDestination(url, smooth);
-    if (url.hash) {
-      let id = "";
-      try { id = decodeURIComponent(url.hash.slice(1)); } catch { id = url.hash.slice(1); }
-      if (id) setTimeout(() => {
-        const target = document.getElementById(id);
-        if (target) target.scrollIntoView({ behavior: smooth && !matchMedia("(prefers-reduced-motion: reduce)").matches ? "smooth" : "auto", block: "start" });
-      }, 80);
-    }
   } catch (error) {
     if (error.name !== "AbortError") location.assign(url.href);
   } finally {
