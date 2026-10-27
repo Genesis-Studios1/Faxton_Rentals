@@ -14,7 +14,7 @@ window.FAXTON_SITE = Object.freeze({
   // The Faxton Rentals web app (the product). Help centre, privacy, terms and licence pages live there.
   APP_URL: "https://faxton-rentals.web.app",
 
-  // Contact details. Empty = the card is hidden. Do not invent values: only add real ones.
+  // Contact details. Empty = a non-clickable placeholder card appears. Only add verified values.
   SUPPORT_EMAIL: "",     // e.g. "support@yourdomain.com"
   PHONE: "",             // e.g. "+234 800 000 0000"
   WHATSAPP: "",          // digits only with country code, e.g. "2348000000000"
