@@ -1492,3 +1492,26 @@ body[data-page="contact"] .icard .icon-tile .ic {
   body[data-page="home"] .steps .step__n { top:16px; right:17px; font-size:34px; }
   body[data-page="home"] .steps .step > .icon-tile { margin-top:28px; }
 }
+
+
+/* Contact channel cards remain balanced with or without configured contact details. */
+body[data-page="contact"] .info__grid {
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  align-items:stretch;
+  gap:14px;
+}
+body[data-page="contact"] .info__grid > li,
+body[data-page="contact"] .info__grid .icard {
+  min-width:0;
+  height:100%;
+}
+body[data-page="contact"] .info__grid .icard > span:last-child { min-width:0; }
+body[data-page="contact"] .info__grid .icard h3,
+body[data-page="contact"] .info__grid .icard p,
+body[data-page="contact"] .info__grid .icard small { overflow-wrap:anywhere; }
+@media (max-width:900px) {
+  body[data-page="contact"] .info__grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media (max-width:480px) {
+  body[data-page="contact"] .info__grid { grid-template-columns:minmax(0,1fr); }
+}
