@@ -26,7 +26,7 @@ function infoCards() {
     : card("whatsapp", "WhatsApp", "Contact details coming soon", "", ""));
   if (CONFIG.ADDRESS) cards.push(card("pin", "Our office", CONFIG.ADDRESS, `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(CONFIG.ADDRESS)}`, "", true));
   const first = list.firstElementChild;
-  cards.forEach((html) => { const li = document.createElement("li"); li.innerHTML = html; list.insertBefore(li, first); });
+  cards.reverse().forEach((html) => { const li = document.createElement("li"); li.innerHTML = html; list.insertBefore(li, first); });
   // the static Help centre card points at the configured app
   $$("a[data-app]").forEach((a) => { a.href = CONFIG.APP_URL + a.dataset.app; });
 }
