@@ -97,7 +97,7 @@ function resolveSrcset(value, baseUrl) {
   }).join(', ');
 }
 function rebaseIncomingUrls(root, targetUrl) {
-  const nodes = [root, ...root.querySelectorAll('[href], [src], [srcset], [poster], [action], [formaction], [data], [xlink\\:href]')];
+  const nodes = [root, ...root.querySelectorAll('*')];
   for (const node of nodes) {
     for (const attr of ['href', 'xlink:href', 'src', 'poster', 'action', 'formaction', 'data']) {
       if (!node.hasAttribute(attr)) continue;
