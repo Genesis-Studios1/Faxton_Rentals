@@ -1,4 +1,4 @@
-// Contact page: info cards from the config (hidden when a value is empty) and the message form.
+// Contact page: configured channels become links; empty channels keep a labeled placeholder icon until details are available.
 import { CONFIG } from "./config.js";
 import { SUBJECTS, validateContact, submitContact, tooSoon, secondsLeft } from "./waitlist-core.js";
 import { $, $$, esc, icon, store } from "./ui.js";
