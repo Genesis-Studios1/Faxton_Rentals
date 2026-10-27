@@ -19,7 +19,15 @@ function load(force = false) {
   return loading;
 }
 const listeners = new Set();
+let activeOpenDetected = null;
 const notify = () => listeners.forEach((f) => f());
+
+// Keep document-level listeners single-instance when the router revisits the download panel.
+document.addEventListener("fx:pagewillchange", () => { listeners.clear(); activeOpenDetected = null; });
+document.addEventListener("fx:open-download", () => activeOpenDetected?.());
+document.addEventListener("click", (event) => {
+  if (event.target.closest?.(".dlx-head, [data-dl-now]")) load();
+}, { capture: true });
 
 function sheetHtml(g) {
   const { phase, release, stale } = latest;
@@ -114,13 +122,13 @@ function mountPicker(root) {
     if (r.top < 0 || r.bottom > window.innerHeight) sec.scrollIntoView({ behavior: "smooth", block: "center" });
     setTimeout(() => open(target, { scroll: false }), 250);
   };
-  $$("[data-dl-now]", root.closest("[data-download]") || root).forEach((b) => b.addEventListener("click", openDetected));
-  document.addEventListener("fx:open-download", () => { if (root.isConnected && root.closest("[data-download]")) openDetected(); });
+  activeOpenDetected = () => { if (root.isConnected && root.closest("[data-download]")) openDetected(); };
+  $("[data-dl-now]", root.closest("[data-download]") || root).forEach((b) => b.addEventListener("click", openDetected));
 }
 
 export function initDownload() {
-  const roots = $$("[data-download]");
-  if (!roots.length) return;
+  const roots = $("[data-download]");
+  if (!roots.length) { activeOpenDetected = null; return; }
   // fetch lazily: when the section gets close to the screen, or right away if it is already near
   const start = () => { if (!loading) load(); };
   roots.forEach((r) => mountPicker(r));
@@ -128,8 +136,6 @@ export function initDownload() {
     const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { start(); io.disconnect(); } }, { rootMargin: "400px 0px" });
     roots.forEach((r) => io.observe(r));
   } else start();
-  // opening a picker before the fetch started (very fast click) also starts it
-  document.addEventListener("click", (e) => { if (e.target.closest?.(".dlx-head, [data-dl-now]")) start(); }, { capture: true });
   // #download in the address bar
   if (window.location.hash === "#download") start();
 }
