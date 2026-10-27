@@ -13,6 +13,7 @@ Plain HTML, CSS and JavaScript. No framework, no build step, no analytics, no co
 | Contact us | `contact/` |
 | About us | `about/` |
 | Billing | `billing/` |
+| Privacy Policy | `privacy/` |
 | Not found | `404.html` |
 
 ## Run it on your computer
