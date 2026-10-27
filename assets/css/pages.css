@@ -520,3 +520,97 @@ a.icard:hover { transform: translateY(-4px); border-color: #b9d9ca; color: var(-
   .frf-hero .hero__bg img { animation:none; }
   .frf * { scroll-behavior:auto; }
 }
+
+
+/* Final scale and mobile pass for the supplied Features-page reference. */
+.frf .wrap { width:min(100% - 2 * var(--gutter),1000px); }
+.frf-block { padding-block:18px; }
+.frf-copy h2 { font-size:clamp(22px,2vw,27px); line-height:1.06; }
+.frf-copy>p { font-size:12.5px; line-height:1.43; }
+.frf-checks { margin-top:12px; gap:6px; }
+.frf-checks li { font-size:11.5px; line-height:1.38; }
+.frf-message-grid { grid-template-columns:minmax(0,1.1fr) 220px minmax(0,.68fr); min-height:232px; gap:clamp(20px,2.8vw,34px); }
+.frf-device--chat { height:246px; }
+.frf-message .frf-phone { width:218px; }
+.frf-bubbles { gap:8px; padding-top:29px; }
+.frf-bubble,.frf-file { padding:11px 13px; font-size:10.5px; }
+.frf-services-grid { grid-template-columns:minmax(150px,.68fr) minmax(0,1.2fr) minmax(175px,.76fr); min-height:246px; gap:clamp(18px,2.8vw,34px); }
+.frf-service-device { height:250px; }
+.frf-service-device .frf-phone { width:202px; }
+.frf-service-grid { gap:6px; }
+.frf-service-grid li { min-height:65px; font-size:10.5px; }
+.frf-service-grid .ic { width:23px; height:23px; }
+.frf-duo-card { min-height:246px; padding-block:16px; gap:clamp(12px,2vw,22px); }
+.frf-call-device,.frf-safety-device { height:222px; }
+.frf-phone--small { width:min(148px,100%); }
+.frf-duo-copy h2 { font-size:clamp(20px,1.8vw,24px); }
+.frf-duo-copy>p { font-size:11.5px; }
+.frf-duo-copy .frf-checks li { font-size:10.5px; }
+.frf-cta-inner { min-height:108px; }
+.frf-cta-heading h2 { font-size:clamp(22px,2vw,28px); }
+.frf-cta-inner>p { font-size:11px; }
+
+@media (max-width:800px) {
+  .frf .wrap { width:min(100% - 36px,680px); }
+  .frf-hero { padding:91px 0 23px; }
+  .frf-hero h1 { max-width:600px; font-size:clamp(30px,5vw,38px); }
+  .frf-message-grid { grid-template-columns:minmax(0,1fr) 190px; gap:20px; min-height:220px; }
+  .frf-device--chat { height:230px; }
+  .frf-message .frf-phone { width:190px; }
+  .frf-services-grid { grid-template-columns:135px minmax(0,1fr); gap:18px; min-height:0; }
+  .frf-service-device { height:225px; }
+  .frf-service-device .frf-phone { width:180px; }
+  .frf-service-grid li { min-height:58px; }
+  .frf-duo-card { min-height:220px; padding-inline:18px; }
+  .frf-call-device,.frf-safety-device { height:205px; }
+  .frf-phone--small { width:132px; }
+  .frf-cta-inner { grid-template-columns:44px minmax(0,1fr) auto; gap:13px; }
+  .frf-cta-mark { width:44px; height:44px; }
+}
+@media (max-width:560px) {
+  .frf .wrap { width:calc(100% - 32px); }
+  .frf-hero { padding:88px 0 25px; }
+  .frf-hero .hero__inner { display:block; }
+  .frf-hero .hero-in { max-width:100%; }
+  .frf-hero h1 { font-size:clamp(28px,7.6vw,35px); line-height:1.03; }
+  .frf-hero .hero__lead { max-width:40ch; font-size:12.5px; line-height:1.5; }
+  .frf-block { padding:22px 0; }
+  .frf-message-grid { grid-template-columns:minmax(0,1fr); gap:14px; min-height:0; }
+  .frf-message .frf-copy { padding-top:0; }
+  .frf-copy h2 { font-size:clamp(23px,6vw,27px); }
+  .frf-copy>p { font-size:12px; }
+  .frf-checks li { font-size:11.5px; }
+  .frf-device--chat { height:250px; overflow:hidden; }
+  .frf-message .frf-phone { width:150px; }
+  .frf-bubbles { display:none; }
+  .frf-services-grid { grid-template-columns:minmax(0,1fr); gap:15px; }
+  .frf-services-copy { grid-column:1; grid-row:1; }
+  .frf-service-grid { grid-column:1; grid-row:2; grid-template-columns:repeat(3,minmax(0,1fr)); margin:0; }
+  .frf-service-grid li { min-height:64px; font-size:10px; }
+  .frf-service-device { grid-column:1; grid-row:3; height:190px; justify-content:center; }
+  .frf-service-device .frf-phone { width:145px; }
+  .frf-duo { grid-template-columns:minmax(0,1fr); }
+  .frf-duo-card { grid-template-columns:minmax(0,1fr); gap:10px; min-height:0; padding:22px 16px 0; }
+  .frf-call { border-right:0; border-bottom:1px solid #e1ede6; }
+  .frf-duo-copy { grid-row:1; }
+  .frf-call-device,.frf-safety-device { grid-row:2; height:218px; justify-content:center; }
+  .frf-phone--small,.frf-safety-device .frf-phone { width:126px; }
+  .frf-duo-copy .frf-tag { gap:10px; }
+  .frf-duo-copy .frf-icon { width:38px; height:38px; }
+  .frf-duo-copy h2 { font-size:24px; }
+  .frf-duo-copy>p { font-size:12px; }
+  .frf-duo-copy .frf-checks li { font-size:11px; }
+  .frf-safety { grid-template-columns:minmax(0,1fr); }
+  .frf-cta-inner { grid-template-columns:36px minmax(0,1fr); gap:10px; padding:18px 0; }
+  .frf-cta-mark { width:34px; height:36px; }
+  .frf-cta-heading h2 { font-size:22px; }
+  .frf-cta-inner>p { grid-column:2; grid-row:2; font-size:11px; }
+  .frf-cta-inner>.btn { grid-column:2; grid-row:3; justify-self:start; min-height:40px; margin-top:4px; }
+}
+@media (max-width:360px) {
+  .frf .wrap { width:calc(100% - 26px); }
+  .frf-tag { gap:8px; }
+  .frf-icon { width:35px; height:35px; }
+  .frf-service-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .frf-duo-card { padding-inline:13px; }
+}
