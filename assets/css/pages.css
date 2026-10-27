@@ -1160,3 +1160,22 @@ body[data-page="privacy"] .fr-privacy li { overflow-wrap:anywhere; }
   body[data-page="features"] .frf-hero .hero__lead { font-size:12px; }
   body[data-page="privacy"] .fr-privacy { padding-inline:0; }
 }
+
+
+/* SPA navigation: quick page swaps with a restrained entrance and tiny top progress line. */
+@keyframes fx-page-enter {
+  from { opacity:0; transform:translateY(5px); }
+  to { opacity:1; transform:translateY(0); }
+}
+main#main.spa-entering { animation:fx-page-enter .17s ease-out both; }
+#fx-spa-progress {
+  position:fixed; z-index:9999; inset:0 auto auto 0; width:100%; height:2px;
+  background:linear-gradient(90deg,#b6f24a,#34d399,#b6f24a);
+  transform:scaleX(0); transform-origin:left center; opacity:0; pointer-events:none;
+}
+#fx-spa-progress.is-active { opacity:1; animation:fx-progress .8s cubic-bezier(.22,.61,.36,1) infinite; }
+@keyframes fx-progress { 0%{transform:scaleX(.05)} 60%{transform:scaleX(.72)} 100%{transform:scaleX(.93)} }
+@media (prefers-reduced-motion:reduce) {
+  main#main.spa-entering { animation:none; }
+  #fx-spa-progress.is-active { animation:none; transform:scaleX(.7); }
+}
