@@ -1179,3 +1179,196 @@ main#main.spa-entering { animation:fx-page-enter .17s ease-out both; }
   main#main.spa-entering { animation:none; }
   #fx-spa-progress.is-active { animation:none; transform:scaleX(.7); }
 }
+
+
+/* Features page repair: cleaner heading, complete phone frames, desktop/tablet/mobile layouts */
+body[data-page="features"] .frf-hero {
+  min-height:clamp(365px,39vw,465px);
+  padding:clamp(128px,13vw,162px) 0 clamp(54px,6vw,72px);
+}
+body[data-page="features"] .frf-hero .hero-in { max-width:690px; }
+body[data-page="features"] .frf-hero h1 {
+  max-width:14ch; font-family:var(--font-head),"Inter",sans-serif;
+  font-size:clamp(37px,4.1vw,55px); font-weight:750; line-height:1.02;
+  letter-spacing:-.045em; text-wrap:balance;
+}
+body[data-page="features"] .frf-hero h1 .accent {
+  display:block; margin-top:5px; font:inherit; color:#b5f38a;
+}
+body[data-page="features"] .frf-hero .hero__lead {
+  max-width:54ch; margin-top:16px; font-size:clamp(14px,1.2vw,16px); line-height:1.52;
+}
+body[data-page="features"] .frf-block { padding:clamp(34px,4vw,52px) 0; }
+body[data-page="features"] .frf-message-grid {
+  grid-template-columns:minmax(0,1fr) minmax(180px,210px) minmax(155px,.72fr);
+  align-items:center; gap:clamp(18px,2.5vw,34px); min-height:450px;
+}
+body[data-page="features"] .frf-message .frf-copy { padding-top:0; }
+body[data-page="features"] .frf-device,
+body[data-page="features"] .frf-device--chat,
+body[data-page="features"] .frf-service-device,
+body[data-page="features"] .frf-call-device,
+body[data-page="features"] .frf-safety-device { min-width:0; overflow:visible; }
+body[data-page="features"] .frf-device--chat {
+  height:auto; min-height:0; align-self:center; display:flex;
+  justify-content:center; align-items:center;
+}
+body[data-page="features"] .frf-phone {
+  display:block; position:relative; width:min(100%,200px); max-width:100%;
+  min-width:0; flex:none; margin:0 auto; transform:none;
+}
+body[data-page="features"] .frf-phone .phone__frame {
+  position:relative; width:100%; padding:clamp(5px,.7vw,8px); border-radius:clamp(24px,3vw,38px);
+}
+body[data-page="features"] .frf-phone .phone__screen {
+  position:relative; width:100%; height:auto; aspect-ratio:390 / 880;
+  overflow:hidden; border-radius:clamp(19px,2.5vw,31px); isolation:isolate;
+}
+body[data-page="features"] .frf-phone .phone__screen > img {
+  position:absolute; inset:4.1% 0 0; width:100%; height:95.9%;
+  display:block; object-fit:cover; object-position:top center;
+}
+body[data-page="features"] .frf-phone .phone__sb { height:4.1%; }
+body[data-page="features"] .frf-phone .phone__island { top:1.1%; }
+body[data-page="features"] .frf-phone--interactive { width:min(100%,194px); }
+body[data-page="features"] .frf-live-chat { inset:4.1% 0 0; min-width:0; }
+body[data-page="features"] .frf-chat-head,
+body[data-page="features"] .frf-chat-thread,
+body[data-page="features"] .frf-chat-composer { min-width:0; }
+body[data-page="features"] .frf-chat-thread { flex:1 1 auto; min-height:0; overscroll-behavior:contain; }
+body[data-page="features"] .frf-chat-composer { flex:none; }
+body[data-page="features"] .frf-demo-caption {
+  max-width:220px; margin:12px auto 0; font-size:11px; line-height:1.4; text-align:center;
+}
+body[data-page="features"] .frf-bubbles { min-width:0; align-self:center; padding:12px 0; }
+body[data-page="features"] .frf-bubble,
+body[data-page="features"] .frf-file { min-width:0; overflow-wrap:anywhere; }
+
+body[data-page="features"] .frf-services-grid {
+  grid-template-columns:minmax(170px,.72fr) minmax(0,1.25fr) minmax(170px,.8fr);
+  align-items:center; gap:clamp(18px,2.5vw,34px); min-height:440px;
+}
+body[data-page="features"] .frf-service-device {
+  height:auto; min-height:0; align-self:center; display:flex; justify-content:center; align-items:center;
+}
+body[data-page="features"] .frf-service-device .frf-phone { width:min(100%,185px); }
+body[data-page="features"] .frf-service-grid { min-width:0; gap:8px; }
+body[data-page="features"] .frf-service-grid li { min-width:0; overflow-wrap:anywhere; }
+
+body[data-page="features"] .frf-duo-card {
+  grid-template-columns:minmax(132px,.7fr) minmax(0,1fr);
+  gap:clamp(14px,1.8vw,24px); align-items:center; min-height:400px;
+  padding:28px clamp(18px,2.6vw,36px);
+}
+body[data-page="features"] .frf-call-device,
+body[data-page="features"] .frf-safety-device {
+  height:auto; min-height:0; align-self:center; display:flex;
+  justify-content:center; align-items:center;
+}
+body[data-page="features"] .frf-phone--small,
+body[data-page="features"] .frf-call-device .frf-phone,
+body[data-page="features"] .frf-safety-device .frf-phone { width:min(100%,150px); }
+body[data-page="features"] .frf-phone--small .phone__frame { padding:6px; }
+body[data-page="features"] .frf-phone--small .phone__screen { border-radius:24px; }
+body[data-page="features"] .frf-duo-copy { min-width:0; align-self:center; }
+body[data-page="features"] .frf-duo-copy h2 {
+  font-family:var(--font-head),"Inter",sans-serif; line-height:1.08; letter-spacing:-.035em;
+}
+body[data-page="features"] .frf-duo-copy p,
+body[data-page="features"] .frf-duo-copy li { overflow-wrap:anywhere; }
+body[data-page="features"] .frf-cta-heading h2 {
+  font-family:var(--font-head),"Inter",sans-serif; font-size:clamp(22px,2vw,29px);
+  line-height:1.12; letter-spacing:-.04em;
+}
+
+@media (max-width:1050px) {
+  body[data-page="features"] .frf-hero { min-height:365px; padding:120px 0 54px; }
+  body[data-page="features"] .frf-hero h1 { font-size:clamp(36px,4.6vw,49px); max-width:15ch; }
+  body[data-page="features"] .frf-message-grid {
+    grid-template-columns:minmax(0,1fr) minmax(165px,190px); min-height:430px; gap:22px;
+  }
+  body[data-page="features"] .frf-bubbles { display:none; }
+  body[data-page="features"] .frf-services-grid {
+    grid-template-columns:minmax(150px,.65fr) minmax(0,1.35fr); min-height:0;
+    gap:24px; padding-block:8px;
+  }
+  body[data-page="features"] .frf-service-device { grid-column:1; grid-row:1; }
+  body[data-page="features"] .frf-service-device .frf-phone { width:min(100%,175px); }
+  body[data-page="features"] .frf-services-copy { grid-column:2; grid-row:1; }
+  body[data-page="features"] .frf-service-grid {
+    grid-column:1/-1; grid-row:2; grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+  body[data-page="features"] .frf-service-grid li { min-height:65px; }
+  body[data-page="features"] .frf-duo-card { min-height:365px; padding:24px 20px; gap:16px; }
+  body[data-page="features"] .frf-call,
+  body[data-page="features"] .frf-safety { grid-template-columns:minmax(112px,.65fr) minmax(0,1fr); }
+  body[data-page="features"] .frf-phone--small,
+  body[data-page="features"] .frf-call-device .frf-phone,
+  body[data-page="features"] .frf-safety-device .frf-phone { width:min(100%,138px); }
+}
+@media (max-width:760px) {
+  body[data-page="features"] .frf-hero { min-height:0; padding:105px 0 38px; }
+  body[data-page="features"] .frf-hero h1 { max-width:14ch; font-size:clamp(34px,7vw,46px); }
+  body[data-page="features"] .frf-hero .hero__lead { max-width:44ch; font-size:14px; }
+  body[data-page="features"] .frf-block { padding:32px 0; }
+  body[data-page="features"] .frf-message-grid {
+    grid-template-columns:minmax(0,1fr); align-items:start; gap:24px; min-height:0;
+  }
+  body[data-page="features"] .frf-message .frf-copy { grid-column:1; grid-row:1; }
+  body[data-page="features"] .frf-device--chat {
+    grid-column:1; grid-row:2; height:auto; min-height:0;
+    display:flex; flex-direction:column; align-items:center; overflow:visible;
+  }
+  body[data-page="features"] .frf-message .frf-phone,
+  body[data-page="features"] .frf-phone--interactive { width:min(190px,58vw); }
+  body[data-page="features"] .frf-demo-caption { margin-top:10px; }
+  body[data-page="features"] .frf-bubbles { display:none; }
+  body[data-page="features"] .frf-services-grid {
+    grid-template-columns:minmax(0,1fr); min-height:0; gap:24px;
+  }
+  body[data-page="features"] .frf-services-copy { grid-column:1; grid-row:1; }
+  body[data-page="features"] .frf-service-device {
+    grid-column:1; grid-row:2; height:auto; min-height:0; display:flex; overflow:visible;
+  }
+  body[data-page="features"] .frf-service-device .frf-phone { width:min(170px,52vw); }
+  body[data-page="features"] .frf-service-grid {
+    grid-column:1; grid-row:3; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px;
+  }
+  body[data-page="features"] .frf-service-grid li { min-height:72px; font-size:11px; }
+  body[data-page="features"] .frf-duo { grid-template-columns:minmax(0,1fr); }
+  body[data-page="features"] .frf-duo-card {
+    grid-template-columns:minmax(0,1fr); min-height:0; gap:22px;
+    padding:30px max(var(--gutter),calc((100vw - 620px)/2)); overflow:visible;
+  }
+  body[data-page="features"] .frf-call,
+  body[data-page="features"] .frf-safety { grid-template-columns:minmax(0,1fr); }
+  body[data-page="features"] .frf-duo-copy { grid-column:1; grid-row:1; }
+  body[data-page="features"] .frf-call-device,
+  body[data-page="features"] .frf-safety-device {
+    grid-column:1; grid-row:2; height:auto; min-height:0; overflow:visible;
+  }
+  body[data-page="features"] .frf-phone--small,
+  body[data-page="features"] .frf-call-device .frf-phone,
+  body[data-page="features"] .frf-safety-device .frf-phone { width:min(158px,48vw); }
+  body[data-page="features"] .frf-cta-inner {
+    grid-template-columns:42px minmax(0,1fr); gap:12px; padding:24px 0;
+  }
+  body[data-page="features"] .frf-cta-mark { width:40px; height:40px; }
+  body[data-page="features"] .frf-cta-heading { grid-column:2; grid-row:1; }
+  body[data-page="features"] .frf-cta-inner>p { grid-column:2; grid-row:2; margin:2px 0 0; }
+  body[data-page="features"] .frf-cta-inner>.btn { grid-column:2; grid-row:3; justify-self:start; margin-top:3px; }
+}
+@media (max-width:420px) {
+  body[data-page="features"] .frf-hero { padding:94px 0 32px; }
+  body[data-page="features"] .frf-hero h1 { font-size:clamp(32px,8.3vw,38px); }
+  body[data-page="features"] .frf-hero .hero__lead { font-size:13px; }
+  body[data-page="features"] .frf-copy h2 { font-size:23px; }
+  body[data-page="features"] .frf-message .frf-phone,
+  body[data-page="features"] .frf-phone--interactive { width:min(176px,56vw); }
+  body[data-page="features"] .frf-service-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  body[data-page="features"] .frf-service-grid li { min-height:68px; }
+  body[data-page="features"] .frf-duo-card { padding-block:26px; }
+  body[data-page="features"] .frf-phone--small,
+  body[data-page="features"] .frf-call-device .frf-phone,
+  body[data-page="features"] .frf-safety-device .frf-phone { width:min(148px,52vw); }
+}
