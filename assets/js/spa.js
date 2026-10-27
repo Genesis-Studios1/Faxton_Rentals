@@ -1,6 +1,7 @@
 // Lightweight same-origin navigation for the public marketing site.
 // Keeps the shell intact, prefetches navigation targets, and preserves ordinary navigation as fallback.
 const pageCache = new Map();
+const inFlightPages = new Map();
 const preloadedImages = new Set();
 const MAX_CACHE = 7;
 let activeController = null;
@@ -31,22 +32,30 @@ function stopProgress() {
   if (progressEl) progressEl.classList.remove("is-active");
 }
 
-async function loadHTML(url, signal) {
+async function loadHTML(url) {
   const key = pageKey(url);
   if (pageCache.has(key)) return pageCache.get(key);
-  const response = await fetch(key, {
-    method: "GET",
-    credentials: "same-origin",
-    headers: { "X-Faxton-Navigation": "1" },
-    signal
-  });
-  if (!response.ok) throw new Error("Page request failed (" + response.status + ")");
-  const type = response.headers.get("content-type") || "";
-  if (type && type.indexOf("text/html") === -1) throw new Error("Target is not an HTML page");
-  const html = await response.text();
-  pageCache.set(key, html);
-  while (pageCache.size > MAX_CACHE) pageCache.delete(pageCache.keys().next().value);
-  return html;
+  if (inFlightPages.has(key)) return inFlightPages.get(key);
+  const request = (async () => {
+    const response = await fetch(key, {
+      method: "GET",
+      credentials: "same-origin",
+      headers: { "X-Faxton-Navigation": "1" }
+    });
+    if (!response.ok) throw new Error("Page request failed (" + response.status + ")");
+    const type = response.headers.get("content-type") || "";
+    if (type && type.indexOf("text/html") === -1) throw new Error("Target is not an HTML page");
+    const html = await response.text();
+    pageCache.set(key, html);
+    while (pageCache.size > MAX_CACHE) pageCache.delete(pageCache.keys().next().value);
+    return html;
+  })();
+  inFlightPages.set(key, request);
+  try {
+    return await request;
+  } finally {
+    if (inFlightPages.get(key) === request) inFlightPages.delete(key);
+  }
 }
 async function prefetch(url) {
   if (!isLocalPage(url) || url.pathname === location.pathname || pageCache.has(pageKey(url))) return;
@@ -121,7 +130,7 @@ async function navigate(input, options) {
   activeController = controller;
   startProgress();
   try {
-    const html = await loadHTML(url, controller.signal);
+    const html = await loadHTML(url);
     if (controller.signal.aborted) return;
     const parsed = new DOMParser().parseFromString(html, "text/html");
     const incoming = {
@@ -153,7 +162,7 @@ async function navigate(input, options) {
     document.dispatchEvent(new CustomEvent("fx:pagechange", { detail: { url: url.href, page: document.body.dataset.page } }));
     scrollToDestination(url, smooth);
   } catch (error) {
-    if (error.name !== "AbortError") location.assign(url.href);
+    if (!controller.signal.aborted && error.name !== "AbortError") location.assign(url.href);
   } finally {
     if (activeController === controller) {
       activeController = null;
