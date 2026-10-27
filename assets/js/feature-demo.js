@@ -1,8 +1,9 @@
 // Interactive, local-only chat demonstration for the public Features page.
 // This is a UI preview: it never sends a message or accesses the visitor's contacts.
-const root = document.querySelector("[data-chat-demo]");
-
-if (root) {
+export function initFeatureDemo() {
+  const root = document.querySelector("[data-chat-demo]");
+  if (!root || root.dataset.demoInitialized === "true") return;
+  root.dataset.demoInitialized = "true";
   const thread = root.querySelector("[data-demo-thread]");
   const form = root.querySelector("[data-demo-form]");
   const input = root.querySelector("[data-demo-input]");
