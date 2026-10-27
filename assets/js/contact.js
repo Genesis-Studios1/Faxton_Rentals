@@ -1,4 +1,4 @@
-// Contact page: info cards from the config (hidden when a value is empty) and the message form.
+// Contact page: configured channels become links; empty channels keep a labeled placeholder icon until details are available.
 import { CONFIG } from "./config.js";
 import { SUBJECTS, validateContact, submitContact, tooSoon, secondsLeft } from "./waitlist-core.js";
 import { $, $$, esc, icon, store } from "./ui.js";
@@ -13,14 +13,20 @@ function infoCards() {
   const cards = [];
   const card = (ic, title, text, href, note, ext = false) => {
     const inner = `<span class="icon-tile">${icon(ic)}</span><span><h3>${esc(title)}</h3><p>${esc(text)}</p>${note ? `<small>${esc(note)}</small>` : ""}</span>`;
-    return href ? `<a class="icard" href="${esc(href)}"${ext ? ' target="_blank" rel="noopener noreferrer"' : ""}>${inner}</a>` : `<div class="icard">${inner}</div>`;
+    return href ? `<a class="icard" href="${esc(href)}"${ext ? ' target="_blank" rel="noopener noreferrer"' : ""}>${inner}</a>` : `<div class="icard is-placeholder">${inner}</div>`;
   };
-  if (CONFIG.SUPPORT_EMAIL) cards.push(card("mail", "Email", CONFIG.SUPPORT_EMAIL, `mailto:${CONFIG.SUPPORT_EMAIL}`, "We reply as soon as we can"));
-  if (CONFIG.PHONE) cards.push(card("phone", "Phone", CONFIG.PHONE, `tel:${CONFIG.PHONE.replace(/[^\d+]/g, "")}`, ""));
-  if (CONFIG.WHATSAPP) cards.push(card("whatsapp", "WhatsApp", "Chat with us on WhatsApp", `https://wa.me/${CONFIG.WHATSAPP}`, "", true));
+  cards.push(CONFIG.SUPPORT_EMAIL
+    ? card("mail", "Email", CONFIG.SUPPORT_EMAIL, `mailto:${CONFIG.SUPPORT_EMAIL}`, "We reply as soon as we can")
+    : card("mail", "Email", "Contact details coming soon", "", ""));
+  cards.push(CONFIG.PHONE
+    ? card("phone", "Phone", CONFIG.PHONE, `tel:${CONFIG.PHONE.replace(/[^\d+]/g, "")}`, "")
+    : card("phone", "Phone", "Contact details coming soon", "", ""));
+  cards.push(CONFIG.WHATSAPP
+    ? card("whatsapp", "WhatsApp", "Chat with us on WhatsApp", `https://wa.me/${CONFIG.WHATSAPP}`, "", true)
+    : card("whatsapp", "WhatsApp", "Contact details coming soon", "", ""));
   if (CONFIG.ADDRESS) cards.push(card("pin", "Our office", CONFIG.ADDRESS, `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(CONFIG.ADDRESS)}`, "", true));
   const first = list.firstElementChild;
-  cards.forEach((html) => { const li = document.createElement("li"); li.innerHTML = html; list.insertBefore(li, first); });
+  cards.reverse().forEach((html) => { const li = document.createElement("li"); li.innerHTML = html; list.insertBefore(li, first); });
   // the static Help centre card points at the configured app
   $$("a[data-app]").forEach((a) => { a.href = CONFIG.APP_URL + a.dataset.app; });
 }

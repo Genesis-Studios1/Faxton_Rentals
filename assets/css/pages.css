@@ -1372,3 +1372,146 @@ body[data-page="features"] .frf-cta-heading h2 {
   body[data-page="features"] .frf-call-device .frf-phone,
   body[data-page="features"] .frf-safety-device .frf-phone { width:min(148px,52vw); }
 }
+
+
+/* Final polish: reliable waitlist arrow, clear icons, step numbers and readable hero photography. */
+body[data-page] .site-header .header-cta .ic.ic-go {
+  display:block;
+  flex:0 0 16px;
+  width:16px;
+  height:16px;
+  margin:0;
+  opacity:1;
+  visibility:visible;
+  transform:translateX(0);
+  fill:none;
+  stroke:currentColor;
+  stroke-width:2;
+}
+body[data-page] .site-header .header-cta:hover .ic.ic-go {
+  transform:translateX(2px);
+}
+body[data-page] .hero__bg img {
+  image-rendering:auto;
+  backface-visibility:hidden;
+  animation:none;
+  transform:none;
+}
+
+/* Keep step numerals on one line and away from the step title/content. */
+body[data-page="home"] .steps {
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  align-items:stretch;
+  gap:16px;
+}
+body[data-page="home"] .steps .step {
+  min-width:0;
+  padding:24px 20px 26px;
+  isolation:isolate;
+}
+body[data-page="home"] .steps .step__n {
+  display:block;
+  position:absolute;
+  top:17px;
+  right:18px;
+  z-index:0;
+  width:auto;
+  height:auto;
+  max-width:max-content;
+  margin:0;
+  color:#c5e5d5;
+  font-family:var(--font-head),Inter, sans-serif;
+  font-size:clamp(31px,3vw,42px);
+  font-weight:800;
+  line-height:1;
+  letter-spacing:-.045em;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+  pointer-events:none;
+  user-select:none;
+}
+body[data-page="home"] .steps .step > .icon-tile,
+body[data-page="home"] .steps .step > h3,
+body[data-page="home"] .steps .step > p {
+  position:relative;
+  z-index:1;
+}
+body[data-page="home"] .steps .step > .icon-tile { margin-top:32px; }
+body[data-page="home"] .steps .step h3 {
+  overflow-wrap:normal;
+  word-break:normal;
+  line-height:1.18;
+}
+body[data-page="home"] .steps .step p {
+  overflow-wrap:anywhere;
+  line-height:1.55;
+}
+body[data-page="home"] .steps .step:not(:last-child)::after {
+  top:42px;
+}
+body[data-page="contact"] .icard.is-placeholder {
+  cursor:default;
+  border-color:var(--line);
+  background:#fff;
+  box-shadow:var(--shadow-1);
+}
+body[data-page="contact"] .icard.is-placeholder .icon-tile {
+  background:#e2f4ec;
+  color:var(--brand-d);
+}
+body[data-page="contact"] .icard.is-placeholder p {
+  color:var(--muted);
+  font-weight:400;
+}
+body[data-page="contact"] .icard.is-placeholder:hover {
+  transform:none;
+  border-color:var(--line);
+}
+body[data-page="contact"] .icard .icon-tile .ic {
+  display:block;
+  width:24px;
+  height:24px;
+  opacity:1;
+  visibility:visible;
+  stroke:currentColor;
+}
+
+@media (max-width:1060px) {
+  body[data-page="home"] .steps {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:14px;
+  }
+  body[data-page="home"] .steps .step:not(:last-child)::after { display:none; }
+}
+@media (max-width:560px) {
+  body[data-page="home"] .steps {
+    grid-template-columns:minmax(0,1fr);
+    gap:12px;
+  }
+  body[data-page="home"] .steps .step { padding:20px 18px 22px; }
+  body[data-page="home"] .steps .step__n { top:16px; right:17px; font-size:34px; }
+  body[data-page="home"] .steps .step > .icon-tile { margin-top:28px; }
+}
+
+
+/* Contact channel cards remain balanced with or without configured contact details. */
+body[data-page="contact"] .info__grid {
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  align-items:stretch;
+  gap:14px;
+}
+body[data-page="contact"] .info__grid > li,
+body[data-page="contact"] .info__grid .icard {
+  min-width:0;
+  height:100%;
+}
+body[data-page="contact"] .info__grid .icard > span:last-child { min-width:0; }
+body[data-page="contact"] .info__grid .icard h3,
+body[data-page="contact"] .info__grid .icard p,
+body[data-page="contact"] .info__grid .icard small { overflow-wrap:anywhere; }
+@media (max-width:900px) {
+  body[data-page="contact"] .info__grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media (max-width:480px) {
+  body[data-page="contact"] .info__grid { grid-template-columns:minmax(0,1fr); }
+}

@@ -79,6 +79,34 @@ async function prefetch(url) {
     }
   } catch { /* A failed prefetch never blocks the actual navigation. */ }
 }
+// Rebase links and resources against the destination page before inserting its DOM.
+// This prevents relative SVG sprites and images resolving under the page we left.
+function resolveResource(value, baseUrl) {
+  const raw = String(value || '').trim();
+  if (!raw || /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(raw)) return raw;
+  try { return new URL(raw, baseUrl).href; } catch { return raw; }
+}
+function resolveSrcset(value, baseUrl) {
+  return String(value || '').split(',').map((candidate) => {
+    const part = candidate.trim();
+    if (!part) return part;
+    const firstSpace = part.search(/\s/);
+    const resource = firstSpace < 0 ? part : part.slice(0, firstSpace);
+    const descriptor = firstSpace < 0 ? '' : part.slice(firstSpace);
+    return resolveResource(resource, baseUrl) + descriptor;
+  }).join(', ');
+}
+function rebaseIncomingUrls(root, targetUrl) {
+  const nodes = [root, ...root.querySelectorAll('*')];
+  for (const node of nodes) {
+    for (const attr of ['href', 'xlink:href', 'src', 'poster', 'action', 'formaction', 'data']) {
+      if (!node.hasAttribute(attr)) continue;
+      node.setAttribute(attr, resolveResource(node.getAttribute(attr), targetUrl));
+    }
+    if (node.hasAttribute('srcset')) node.setAttribute('srcset', resolveSrcset(node.getAttribute('srcset'), targetUrl));
+  }
+}
+
 function copyMetadata(parsed, url) {
   if (parsed.title) document.title = parsed.title;
   if (parsed.documentElement.lang) document.documentElement.lang = parsed.documentElement.lang;
@@ -147,6 +175,7 @@ async function navigate(input, options) {
     };
     if (Object.values(incoming).some((el) => !el) || Object.values(current).some((el) => !el)) throw new Error("Page shell is incomplete");
 
+    Object.values(incoming).forEach((root) => rebaseIncomingUrls(root, url));
     document.dispatchEvent(new CustomEvent("fx:pagewillchange", { detail: { url: url.href } }));
     document.documentElement.classList.remove("nav-lock");
     ["header", "menu", "main", "footer"].forEach((name) => current[name].replaceWith(document.importNode(incoming[name], true)));
