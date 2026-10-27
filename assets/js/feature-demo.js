@@ -54,13 +54,13 @@ if (root) {
   };
   const reply = (text) => {
     const typing = showTyping();
-    window.setTimeout(() => {
+    replyTimer = window.setTimeout(() => {
       typing.remove();
       addMessage(text, "incoming");
     }, reduceMotion ? 120 : 850);
   };
   const updateSend = () => { send.disabled = !input.value.trim(); };
-  const resetReply = () => window.clearTimeout(replyTimer);
+  const resetReply = () => { window.clearTimeout(replyTimer); const pending = thread.querySelector('[data-demo-typing]'); if (pending) pending.remove(); };
 
   form.addEventListener("submit", (event) => {
     event.preventDefault();
