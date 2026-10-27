@@ -1,6 +1,7 @@
 // Lightweight same-origin navigation for the public marketing site.
 // Keeps the shell intact, prefetches navigation targets, and preserves ordinary navigation as fallback.
 const pageCache = new Map();
+const preloadedImages = new Set();
 const MAX_CACHE = 7;
 let activeController = null;
 let progressTimer = 0;
@@ -47,9 +48,27 @@ async function loadHTML(url, signal) {
   while (pageCache.size > MAX_CACHE) pageCache.delete(pageCache.keys().next().value);
   return html;
 }
-function prefetch(url) {
+async function prefetch(url) {
   if (!isLocalPage(url) || url.pathname === location.pathname || pageCache.has(pageKey(url))) return;
-  loadHTML(new URL(url.pathname + url.search, location.origin)).catch(() => {});
+  try {
+    const html = await loadHTML(new URL(url.pathname + url.search, location.origin));
+    const parsed = new DOMParser().parseFromString(html, "text/html");
+    const image = parsed.querySelector("main#main .hero__bg img");
+    const source = parsed.querySelector("main#main .hero__bg source[media]");
+    let src = image ? image.getAttribute("src") : "";
+    if (source && image && matchMedia(source.media).matches && source.getAttribute("srcset")) {
+      src = source.getAttribute("srcset").split(",")[0].trim().split(/\s+/)[0];
+    }
+    if (src) {
+      const imageUrl = new URL(src, url).href;
+      if (!preloadedImages.has(imageUrl)) {
+        preloadedImages.add(imageUrl);
+        const preload = new Image();
+        preload.decoding = "async";
+        preload.src = imageUrl;
+      }
+    }
+  } catch { /* A failed prefetch never blocks the actual navigation. */ }
 }
 function copyMetadata(parsed, url) {
   if (parsed.title) document.title = parsed.title;
