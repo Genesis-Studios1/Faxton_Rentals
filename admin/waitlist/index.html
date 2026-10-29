@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06281e">
+<meta name="color-scheme" content="light">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'">
+<title>Waitlist Admin | Faxton Rentals</title>
+<link rel="icon" href="../../assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../assets/css/fonts.css">
+<link rel="stylesheet" href="admin.css">
+<script defer src="../../assets/site-config.js"></script>
+<script type="module" src="admin.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="topbar">
+  <a class="brand" href="../../" aria-label="Faxton Rentals home">
+    <svg viewBox="570 235 415 355" aria-hidden="true"><path d="M576 242H803L745 316H651V377H775V411L651 455V581H576Z" fill="#087451"/><path d="M702 455L775 429V581H702Z" fill="#064b38"/><path d="M825 242H860C915 242 958 290 958 346C958 395 925 430 884 441L977 581H885L793 443V377H847C865 377 878 363 878 346C878 329 865 316 847 316H766Z" fill="#064b38"/></svg>
+    <span><b>Faxton</b> Rentals <small>ADMIN CONSOLE</small></span>
+  </a>
+  <div class="top-actions"><span class="secure"><i></i> Private workspace</span><button id="signout" class="btn btn-quiet" hidden>Sign out</button></div>
+</header>
+<main id="main" class="shell">
+  <section id="login-view" class="login-layout">
+    <div class="login-copy">
+      <p class="eyebrow">FA XTON RENTALS · OPERATIONS</p>
+      <h1>Good homes start with a better welcome.</h1>
+      <p>Manage the people waiting to rent or list a property with Faxton. Keep every early-access signup organised in one place.</p>
+      <div class="trust-list"><span>✓ Renter and owner signups</span><span>✓ Search and export records</span><span>✓ Restricted admin access</span></div>
+    </div>
+    <form id="login-form" class="login-card">
+      <div class="mark">FR</div>
+      <p class="eyebrow">ADMIN ACCESS</p>
+      <h2>Welcome back</h2>
+      <p class="muted">Sign in with an authorised Faxton administrator account.</p>
+      <label for="email">Admin email</label><input id="email" name="email" type="email" autocomplete="username" required maxlength="254" placeholder="admin@example.com">
+      <label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required minlength="6" placeholder="Enter your password">
+      <button class="btn btn-primary" type="submit"><span>Sign in securely</span><b aria-hidden="true">→</b></button>
+      <p id="login-status" class="status" role="status" aria-live="polite"></p>
+      <p class="fine">Access is verified against Firebase Authentication and the server-enforced admin allowlist. Having an account alone does not grant access.</p>
+    </form>
+  </section>
+  <section id="dashboard-view" hidden>
+    <div class="page-heading"><div><p class="eyebrow">WAITLIST OVERVIEW</p><h1>People who are ready to move.</h1><p class="muted">One clear view of early access interest from renters and property owners.</p></div><button id="refresh" class="btn btn-secondary">↻ Refresh list</button></div>
+    <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+    <div class="stats">
+      <article class="stat-card"><span>Total signups</span><strong id="total">—</strong><small>All waitlist registrations</small></article>
+      <article class="stat-card"><span>Renters</span><strong id="renters">—</strong><small>Looking for a home</small></article>
+      <article class="stat-card"><span>Property owners</span><strong id="owners">—</strong><small>Home owners and landlords</small></article>
+      <article class="stat-card"><span>Other property pros</span><strong id="pros">—</strong><small>Agents and agencies</small></article>
+    </div>
+    <section class="table-card">
+      <div class="table-heading"><div><h2>Waitlist registrations</h2><p class="muted">Search, filter, and export the records you are authorised to view.</p></div><button id="export" class="btn btn-primary">↓ Export CSV</button></div>
+      <div class="filters"><label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Search name, email or city…" autocomplete="off"></label><label class="filter-label" for="role-filter">Signup type<select id="role-filter"><option value="all">All signups</option><option value="renter">Renters</option><option value="owner">Property owners</option><option value="agency">Agencies</option><option value="agent">Agents</option></select></label></div>
+      <div class="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Type</th><th>City</th><th>Joined</th></tr></thead><tbody id="rows"><tr><td colspan="5" class="empty">Sign in to load authorised waitlist records.</td></tr></tbody></table></div>
+      <div class="table-footer"><span id="result-count">No records loaded</span><span class="privacy-note">Personal data · handle with care</span></div>
+    </section>
+    <p class="dashboard-foot">Faxton Rentals · Private admin workspace · Keep exported data secure and delete local copies when no longer needed.</p>
+  </section>
+</main>
+<footer><span>© <span id="year"></span> Faxton Rentals</span><a href="../../privacy/">Privacy policy</a><a href="../../">Public website ↗</a></footer>
+</body>
+</html>

@@ -1,0 +1,71 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isOwnerAdmin() {
+      return request.auth != null
+        && request.auth.token.email is string
+        && request.auth.token.email.lower() == "isaacij6yes@gmail.com"
+        && request.auth.token.email_verified == true
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == "admin"
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true;
+    }
+
+    function validEmail(value) {
+      return value is string
+        && value.size() >= 6 && value.size() <= 120
+        && value.matches("^[^@ ]+@[^@ ]+[.][^@ .]+$");
+    }
+
+    function validWaitlist(data) {
+      return data.keys().hasAll(["name", "email", "role", "city", "source", "createdAt"])
+        && data.keys().hasOnly(["name", "email", "role", "city", "source", "createdAt"])
+        && data.name is string && data.name.size() >= 2 && data.name.size() <= 80
+        && validEmail(data.email)
+        && data.role in ["renter", "owner", "agency", "agent"]
+        && data.city is string && data.city.size() >= 2 && data.city.size() <= 60
+        && data.source == "website"
+        && data.createdAt is timestamp
+        && data.createdAt <= request.time
+        && data.createdAt >= request.time - duration.value(10, "minutes");
+    }
+
+    function validSiteMessage(data) {
+      return data.keys().hasAll(["name", "email", "subject", "message", "source", "createdAt"])
+        && data.keys().hasOnly(["name", "email", "subject", "message", "source", "createdAt"])
+        && data.name is string && data.name.size() >= 2 && data.name.size() <= 80
+        && validEmail(data.email)
+        && data.subject in ["General question", "Support", "List my property", "Press", "Other"]
+        && data.message is string && data.message.size() >= 10 && data.message.size() <= 2000
+        && data.source == "website"
+        && data.createdAt is timestamp
+        && data.createdAt <= request.time
+        && data.createdAt >= request.time - duration.value(10, "minutes");
+    }
+
+    match /admins/{uid} {
+      allow get: if request.auth != null
+        && request.auth.uid == uid
+        && request.auth.token.email is string
+        && request.auth.token.email.lower() == "isaacij6yes@gmail.com"
+        && request.auth.token.email_verified == true;
+      allow list, create, update, delete: if false;
+    }
+
+    match /waitlist/{entryId} {
+      allow create: if validWaitlist(request.resource.data);
+      allow get, list: if isOwnerAdmin();
+      allow update, delete: if false;
+    }
+
+    match /siteMessages/{messageId} {
+      allow create: if validSiteMessage(request.resource.data);
+      allow get, list: if isOwnerAdmin();
+      allow update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
