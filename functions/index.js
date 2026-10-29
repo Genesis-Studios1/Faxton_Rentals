@@ -6,8 +6,9 @@ const logger = require("firebase-functions/logger");
 initializeApp();
 
 const RESEND_API_KEY = defineSecret("RESEND_API_KEY");
+const RESEND_FROM_EMAIL = defineSecret("RESEND_FROM_EMAIL");
 const ADMIN_EMAIL = "isaacij6yes@gmail.com";
-const FROM_EMAIL = "Faxton Rentals <onboarding@resend.dev>";
+const DEFAULT_FROM_EMAIL = "Faxton Rentals <onboarding@resend.dev>";
 
 function field(data, key) {
   const value = data && data[key];
@@ -24,7 +25,7 @@ exports.notifyWaitlistSignup = onDocumentCreated(
   {
     document: "waitlist/{entryId}",
     region: "europe-west1",
-    secrets: [RESEND_API_KEY],
+    secrets: [RESEND_API_KEY, RESEND_FROM_EMAIL],
     retry: true,
   },
   async (event) => {
@@ -72,7 +73,7 @@ exports.notifyWaitlistSignup = onDocumentCreated(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: FROM_EMAIL,
+        from: RESEND_FROM_EMAIL.value() || DEFAULT_FROM_EMAIL,
         to: [ADMIN_EMAIL],
         subject,
         text,
