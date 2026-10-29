@@ -1,0 +1,178 @@
+/* Faxton Rentals feature-page responsive and typography corrections. */
+body[data-page="features"] .frf-message,
+body[data-page="features"] .frf-services,
+body[data-page="features"] .frf-duo {
+  min-width: 0;
+  overflow: clip;
+}
+body[data-page="features"] .frf-message-grid {
+  width: min(100%, 1240px);
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, .72fr) minmax(0, .82fr);
+  align-items: center;
+  gap: clamp(16px, 2.5vw, 32px);
+}
+body[data-page="features"] .frf-copy,
+body[data-page="features"] .frf-device,
+body[data-page="features"] .frf-bubbles {
+  min-width: 0;
+  max-width: 100%;
+}
+body[data-page="features"] .frf-copy h2 {
+  font-family: Inter, Arial, sans-serif;
+  font-weight: 750;
+  letter-spacing: -0.035em;
+  line-height: 1.12;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+body[data-page="features"] .frf-device--chat {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+}
+body[data-page="features"] .frf-device--chat .frf-phone {
+  width: min(100%, 270px);
+  max-width: 270px;
+  margin-inline: auto;
+}
+body[data-page="features"] .frf-device--chat .phone__frame,
+body[data-page="features"] .frf-device--chat .phone__screen {
+  max-width: 100%;
+}
+body[data-page="features"] .frf-bubbles {
+  position: relative;
+  inset: auto;
+  transform: none;
+  width: 100%;
+  align-self: center;
+}
+body[data-page="features"] .frf-bubble,
+body[data-page="features"] .frf-file {
+  max-width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+body[data-page="features"] .frf-demo-caption {
+  max-width: 100%;
+  text-align: center;
+}
+body[data-page="features"] .frf-services-grid,
+body[data-page="features"] .frf-duo-card {
+  min-width: 0;
+}
+body[data-page="features"] .frf-duo-card {
+  overflow: hidden;
+}
+@media (max-width: 900px) {
+  body[data-page="features"] .frf-message-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(220px, .78fr);
+    gap: 28px;
+  }
+  body[data-page="features"] .frf-bubbles {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 8px;
+  }
+  body[data-page="features"] .frf-bubble,
+  body[data-page="features"] .frf-file {
+    margin: 0;
+    width: 100%;
+  }
+}
+@media (max-width: 640px) {
+  body[data-page="features"] .frf-message-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    padding-inline: 18px;
+  }
+  body[data-page="features"] .frf-message .frf-copy {
+    grid-row: 1;
+  }
+  body[data-page="features"] .frf-device--chat {
+    grid-row: 2;
+    height: auto;
+    min-height: 0;
+    padding: 0;
+  }
+  body[data-page="features"] .frf-device--chat .frf-phone {
+    width: min(78vw, 300px);
+    max-width: 300px;
+  }
+  body[data-page="features"] .frf-bubbles {
+    grid-row: 3;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+  body[data-page="features"] .frf-bubble,
+  body[data-page="features"] .frf-file {
+    max-width: 100%;
+  }
+  body[data-page="features"] .frf-copy h2 {
+    font-size: clamp(27px, 7vw, 34px);
+    line-height: 1.12;
+  }
+  body[data-page="features"] .frf-tag {
+    align-items: flex-start;
+    gap: 12px;
+  }
+  body[data-page="features"] .frf-tag > div {
+    min-width: 0;
+  }
+  body[data-page="features"] .frf-duo {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+  body[data-page="features"] .frf-duo-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+    padding: 28px 18px;
+  }
+  body[data-page="features"] .frf-call-device,
+  body[data-page="features"] .frf-safety-device {
+    height: auto;
+    min-height: 0;
+    display: flex;
+    justify-content: center;
+  }
+  body[data-page="features"] .frf-phone--small {
+    width: min(68vw, 245px);
+    max-width: 245px;
+    margin-inline: auto;
+  }
+  body[data-page="features"] .frf-services-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    padding-inline: 18px;
+  }
+  body[data-page="features"] .frf-service-device {
+    display: flex;
+    justify-content: center;
+    min-width: 0;
+  }
+  body[data-page="features"] .frf-service-device .frf-phone {
+    width: min(68vw, 245px);
+    max-width: 245px;
+  }
+  body[data-page="features"] .frf-service-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body[data-page="features"] .frf-message *,
+  body[data-page="features"] .frf-services *,
+  body[data-page="features"] .frf-duo * {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
