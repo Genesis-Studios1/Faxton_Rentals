@@ -15,26 +15,26 @@ window.FAXTON_SITE = Object.freeze({
   APP_URL: "https://faxton-rentals.web.app",
 
   // Contact details. Empty = a non-clickable placeholder card appears. Only add verified values.
-  SUPPORT_EMAIL: "",     // e.g. "support@yourdomain.com"
-  PHONE: "",             // e.g. "+234 800 000 0000"
-  WHATSAPP: "",          // digits only with country code, e.g. "2348000000000"
+  SUPPORT_EMAIL: "faxtonhomes.support@gmail.com",
+  PHONE: "07034567861",
+  WHATSAPP: "2347034567861",
   ADDRESS: "",           // e.g. "12 Example Street, Lekki, Lagos"
 
   // Social pages: paste the full address of each page. Empty = the icon says "coming soon".
   SOCIALS: Object.freeze({
-    instagram: "",
-    linkedin: "",
-    x: "",
-    youtube: "",
-    tiktok: "",
-    pinterest: "",
+    instagram: "https://www.instagram.com/faxtonrentals/",
+    linkedin: "https://www.linkedin.com/company/faxtonrentals/",
+    x: "https://x.com/faxtonrentals",
+    youtube: "https://www.youtube.com/@faxtonrentals",
+    tiktok: "https://www.tiktok.com/@faxtonrentals",
+    pinterest: "https://www.pinterest.com/faxtonrentals/",
   }),
 
   // The public GitHub repository that holds the app downloads (latest release is used).
   RELEASES_REPO: "musazaneerah4-crypto/Faxton-Rentals-Downloads",
 
   // Shown in the footer.
-  SITE_VERSION: "2026-10-27.7",
+  SITE_VERSION: "2026-10-29.1",
 
   // Waitlist and contact messages are saved in the Faxton Firestore project with the
   // public web key (the same one the app uses; access is controlled by Firestore rules).
