@@ -27,6 +27,7 @@ body[data-page="features"] .frf-copy h2 {
   overflow-wrap: break-word;
 }
 body[data-page="features"] .frf-device--chat {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
