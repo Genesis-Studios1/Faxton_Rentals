@@ -23,6 +23,9 @@ async function api(url, options = {}) {
   return body;
 }
 async function signIn(email, password) {
+  if (String(email || "").trim().toLowerCase() !== "isaacij6yes@gmail.com") {
+    throw new Error("This dashboard is restricted to isaacij6yes@gmail.com.");
+  }
   requiredConfig();
   const result = await api("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + encodeURIComponent(API_KEY), { method: "POST", body: JSON.stringify({ email, password, returnSecureToken: true }) });
   idToken = result.idToken; currentUser = { uid: result.localId, email: result.email, refreshToken: result.refreshToken, expiresIn: Number(result.expiresIn || 3600) };
