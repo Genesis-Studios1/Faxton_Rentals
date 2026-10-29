@@ -11,12 +11,17 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true;
     }
 
+    function validEmail(value) {
+      return value is string
+        && value.size() >= 6 && value.size() <= 120
+        && value.matches("^[^@ ]+@[^@ ]+[.][^@ .]+$");
+    }
+
     function validWaitlist(data) {
       return data.keys().hasAll(["name", "email", "role", "city", "source", "createdAt"])
         && data.keys().hasOnly(["name", "email", "role", "city", "source", "createdAt"])
         && data.name is string && data.name.size() >= 2 && data.name.size() <= 80
-        && data.email is string && data.email.size() >= 6 && data.email.size() <= 120
-        && data.email.matches('^[A-Za-z0-9.!#$%&\'*+/=?^_`{|}~-]+@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)+$')
+        && validEmail(data.email)
         && data.role in ["renter", "owner", "agency", "agent"]
         && data.city is string && data.city.size() >= 2 && data.city.size() <= 60
         && data.source == "website"
@@ -29,7 +34,7 @@ service cloud.firestore {
       return data.keys().hasAll(["name", "email", "subject", "message", "source", "createdAt"])
         && data.keys().hasOnly(["name", "email", "subject", "message", "source", "createdAt"])
         && data.name is string && data.name.size() >= 2 && data.name.size() <= 80
-        && data.email is string && data.email.size() >= 6 && data.email.size() <= 120
+        && validEmail(data.email)
         && data.subject in ["General question", "Support", "List my property", "Press", "Other"]
         && data.message is string && data.message.size() >= 10 && data.message.size() <= 2000
         && data.source == "website"
