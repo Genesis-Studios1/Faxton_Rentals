@@ -33,6 +33,7 @@
 <link rel="stylesheet" href="assets/css/fonts.css">
 <link rel="stylesheet" href="assets/css/site.css">
 <link rel="stylesheet" href="assets/css/pages.css?v=2026-10-27.7">
+<link rel="stylesheet" href="assets/css/waitlist-renter.css?v=2026-10-29.1">
 <script defer src="assets/site-config.js?v=2026-10-27.7"></script>
 <script type="module" src="assets/js/main.js?v=2026-10-27.5"></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"./#organization","name":"Faxton Solutions","alternateName":"Faxton Rentals","url":"./","logo":"assets/icons/icon-512.png","description":"A rental marketplace for Nigeria: find and rent homes with verified agents, clear costs and safety tools. Launching in Lagos.","areaServed":{"@type":"Country","name":"Nigeria"}},{"@type":"WebSite","@id":"./#website","url":"./","name":"Faxton Rentals","inLanguage":"en-NG","publisher":{"@id":"./#organization"}}]}</script>
@@ -76,13 +77,14 @@
     <div class="wl__card reveal">
       <div data-wl-panel>
         <div class="wl__head">
-          <h2 class="wl__title" id="wl-title">A better rental experience starts here</h2>
-          <p class="wl__sub">We’re launching in Lagos. Join the waitlist and we’ll let you know when Faxton Rentals is ready.</p>
+          <p class="wl__eyebrow"><span aria-hidden="true"></span> EARLY ACCESS · LAGOS</p>
+          <h2 class="wl__title" id="wl-title">Find your next home with more confidence.</h2>
+          <p class="wl__sub">Be among the first renters to try Faxton Rentals — with verified listings, clearer costs and safer property viewings.</p>
         </div>
         <form class="wl__form" method="dialog" novalidate data-wl-form aria-labelledby="wl-title">
           <div class="field" data-f="name"><label for="wl-name">Full name</label><input id="wl-name" name="name" type="text" autocomplete="name" maxlength="80" required placeholder="e.g. Ada Obi"><p class="field-err" id="wl-name-err" role="alert"></p></div>
           <div class="field" data-f="email"><label for="wl-email">Email address</label><input id="wl-email" name="email" type="email" inputmode="email" autocomplete="email" maxlength="120" required placeholder="you@example.com"><p class="field-err" id="wl-email-err" role="alert"></p></div>
-          <div class="field" data-f="role"><label for="wl-role">I am a</label><select id="wl-role" name="role" required><option value="renter" selected>Renter</option><option value="owner">Home owner</option><option value="agency">Agency</option><option value="agent">Agent</option></select><p class="field-err" id="wl-role-err" role="alert"></p></div>
+          <div class="field" data-f="role"><label for="wl-role">I am a</label><select id="wl-role" name="role" required><option value="renter" selected>Renter</option><option value="owner">Home owner</option><option value="agency">Business</option><option value="agent">Agent</option></select><p class="field-err" id="wl-role-err" role="alert"></p></div>
           <div class="field" data-f="city"><label for="wl-city">City</label><input id="wl-city" name="city" type="text" list="ng-cities" autocomplete="address-level2" maxlength="60" required value="Lagos" placeholder="Lagos"><p class="field-err" id="wl-city-err" role="alert"></p><datalist id="ng-cities"><option value="Lagos"></option><option value="Abuja"></option><option value="Port Harcourt"></option><option value="Ibadan"></option><option value="Kano"></option><option value="Benin City"></option><option value="Kaduna"></option><option value="Enugu"></option><option value="Abeokuta"></option><option value="Owerri"></option><option value="Warri"></option><option value="Uyo"></option><option value="Jos"></option><option value="Ilorin"></option><option value="Calabar"></option><option value="Asaba"></option><option value="Akure"></option><option value="Osogbo"></option><option value="Awka"></option><option value="Onitsha"></option><option value="Aba"></option><option value="Abakaliki"></option><option value="Maiduguri"></option><option value="Sokoto"></option><option value="Yola"></option><option value="Makurdi"></option><option value="Lokoja"></option><option value="Minna"></option><option value="Bauchi"></option><option value="Gombe"></option><option value="Katsina"></option><option value="Zaria"></option><option value="Ado-Ekiti"></option><option value="Umuahia"></option><option value="Yenagoa"></option><option value="Lafia"></option><option value="Jalingo"></option><option value="Dutse"></option><option value="Damaturu"></option><option value="Birnin Kebbi"></option><option value="Other"></option></datalist></div>
           <div class="hp" aria-hidden="true"><label>Leave this field empty<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
           <button class="btn btn-dark" type="submit">Join the waitlist <svg class="ic ic-go" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="assets/img/sprite.svg#arrow"/></svg></button>
