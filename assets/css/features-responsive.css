@@ -177,3 +177,37 @@ body[data-page="features"] .frf-duo-card {
     transition-duration: .01ms !important;
   }
 }
+
+
+/* Follow-up polish: keep the messaging copy off the edge and the hint inside the phone. */
+body[data-page="features"] .frf-message .frf-copy {
+  padding-inline: clamp(12px, 1.6vw, 22px);
+}
+body[data-page="features"] .frf-demo-caption {
+  box-sizing: border-box;
+  width: calc(100% - 20px);
+  margin: 0 10px 10px;
+  padding: 7px 8px;
+  border-radius: 10px;
+  background: #edf7f1;
+  color: #56756a;
+  font-size: 10px;
+  line-height: 1.35;
+  letter-spacing: 0;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 640px) {
+  body[data-page="features"] .frf-message .frf-copy {
+    padding-inline: 12px;
+    margin-inline: 2px;
+  }
+  body[data-page="features"] .frf-message .frf-tag {
+    margin-left: 0;
+  }
+  body[data-page="features"] .frf-demo-caption {
+    width: calc(100% - 16px);
+    margin: 0 8px 8px;
+    font-size: 9px;
+  }
+}
