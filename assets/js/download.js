@@ -83,8 +83,6 @@ function mountPicker(root) {
     if (mobile() || !slot) card.append(sh);
     else {
       slot.append(sh);
-      const left = card.offsetLeft - $(".dlx-card", root).offsetLeft;
-      sh.style.marginLeft = Math.max(0, Math.min(left, slot.clientWidth - 360)) + "px";
     }
     openId = id;
     wireSheet(sh, g);
@@ -105,7 +103,7 @@ function mountPicker(root) {
     const g = GROUPS.find((x) => x.id === openId); if (!g) return;
     if (sh.querySelector(".dlx-how")) return; // keep the iOS how-to text as it is
     const wrap = document.createElement("div"); wrap.innerHTML = sheetHtml(g);
-    const fresh = wrap.firstElementChild; const marginLeft = sh.style.marginLeft; sh.replaceWith(fresh); fresh.style.marginLeft = marginLeft; wireSheet(fresh, g);
+    const fresh = wrap.firstElementChild; sh.replaceWith(fresh); wireSheet(fresh, g);
   });
 
   // window resize between phone and desktop layouts: close, so the sheet never sits in the wrong place
