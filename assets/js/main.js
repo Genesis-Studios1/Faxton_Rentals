@@ -2,6 +2,7 @@ import { initHeader } from "./nav.js?v=2026-10-30.4";
 import { initReveal } from "./reveal.js?v=2026-10-30.4";
 import { initFooter } from "./footer.js?v=2026-10-30.4";
 import { initSpaRouter } from "./spa.js?v=2026-10-30.4";
+import { initDownload } from "./download.js?v=2026-10-30.7";
 
 const has = (sel) => document.querySelector(sel);
 let pageBooting = false;
@@ -14,7 +15,7 @@ function bootPage() {
     initFooter();
     initReveal();
     if (has("[data-waitlist]")) import("./waitlist.js?v=2026-10-30.4").then((m) => m.initWaitlist()).catch(() => {});
-    import("./download.js?v=2026-10-30.6").then((m) => m.initDownload()).catch((error) => console.error("[Faxton] Download menu failed to initialise:", error));
+    initDownload();
     if (has("[data-contact-form]") || has("[data-info]")) import("./contact.js?v=2026-10-30.4").then((m) => m.initContact()).catch(() => {});
     if (has("[data-chat-demo]")) import("./feature-demo.js?v=2026-10-30.4").then((m) => m.initFeatureDemo()).catch(() => {});
   } finally {
