@@ -155,7 +155,7 @@ button { cursor: pointer; }
 }
 .menu-btn .ic { width: 24px; height: 24px; }
 /* header turns solid once the page is scrolled */
-.site-header.is-solid { padding: 10px 0; background: rgba(255, 255, 255, .92); -webkit-backdrop-filter: blur(16px) saturate(1.4); backdrop-filter: blur(16px) saturate(1.4); border-bottom-color: var(--line); box-shadow: 0 10px 30px -22px rgba(7, 40, 28, .45); }
+.site-header.is-solid { padding: 10px 0; background: rgba(255, 255, 255, .98); -webkit-backdrop-filter: blur(16px) saturate(1.4); backdrop-filter: blur(16px) saturate(1.4); border-bottom-color: var(--line); box-shadow: 0 10px 30px -22px rgba(7, 40, 28, .45); }
 .site-header.is-solid .logo { color: var(--head); }
 .site-header.is-solid .logo .lg-a { fill: #16996b; }
 .site-header.is-solid .logo .lg-b { fill: #124a38; }
