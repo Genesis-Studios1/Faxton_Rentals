@@ -24,7 +24,7 @@ export function initFooter() {
   $$("[data-choices]").forEach((b) => b.addEventListener("click", openPrivacyChoices));
 
   // Open the shared device picker from every page, not only pages with a download section.
-  $("a[data-get-app]").forEach((a) => a.addEventListener("click", (e) => {
+  $$("a[data-get-app]").forEach((a) => a.addEventListener("click", (e) => {
     e.preventDefault();
     document.dispatchEvent(new CustomEvent("fx:open-download"));
   }));
