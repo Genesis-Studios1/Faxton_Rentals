@@ -1,0 +1,68 @@
+{
+  "tag_name": "v1.2.0",
+  "name": "Faxton Rentals 1.2.0",
+  "html_url": "https://github.com/musazaneerah4-crypto/Faxton-Rentals-Downloads/releases/tag/v1.2.0",
+  "body": "Faxton Rentals 1.2.0 - Android: Faxton-Rentals-Android.apk (phones), Faxton-Rentals-Android-x64.apk (Intel/x86), Faxton-Rentals-Android.aab (Play Store bundle). iPhone: Faxton-Rentals-iPhone-unsigned.ipa (AltStore or Sideloadly). Windows: Faxton-Rentals-Windows-x64.exe / -arm64.exe. Mac: Faxton-Rentals-Mac-arm64.dmg / -x64.dmg. Linux: Faxton-Rentals-Linux-x64 / -arm64 as .AppImage or .deb.",
+  "assets": [
+    {
+      "name": "Faxton-Rentals-Android-x64.apk",
+      "size": 7486556,
+      "browser_download_url": "https://github.com/musazaneerah4-crypto/Faxton-Rentals-Downloads/releases/download/v1.2.0/Faxton-Rentals-Android-x64.apk"
+    },
+    {
+      "name": "Faxton-Rentals-Android.aab",
+      "size": 6504864,
+      "browser_download_url": "https://github.com/musazaneerah4-crypto/Faxton-Rentals-Downloads/releases/download/v1.2.0/Faxton-Rentals-Android.aab"
+    },
+    {
+      "name": "Faxton-Rentals-Android.apk",
+      "size": 7486556,
+      "browser_download_url": "https://github.com/musazaneerah4-crypto/Faxton-Rentals-Downloads/releases/download/v1.2.0/Faxton-Rentals-Android.apk"
+    },
+    {
+      "name": "Faxton-Rentals-iPhone-unsigned.ipa",
+      "size": 4324882,
+      "browser_download_url": "https://github.com/musazaneerah4-crypto/Faxton-Rentals-Downloads/releases/download/v1.2.0/Faxton-Rentals-iPhone-unsigned.ipa"
+    },
+    {
+      "name": "Faxton-Rentals-Linux-arm64.AppImage",
+      "size": 108918574,
+      "browser_download_url": "https://github.com/musazaneerah4-crypto/Faxton-Rentals-Downloads/releases/download/v1.2.0/Faxton-Rentals-Linux-arm64.AppImage"
+    },
+    {
+      "name": "Faxton-Rentals-Linux-arm64.deb",
+      "size": 70568786,
+      "browser_download_url": "https://github.com/musazaneerah4-crypto/Faxton-Rentals-Downloads/releases/download/v1.2.0/Faxton-Rentals-Linux-arm64.deb"
+    },
+    {
+      "name": "Faxton-Rentals-Linux-x64.deb",
+      "size": 74986268,
+      "browser_download_url": "https://github.com/musazaneerah4-crypto/Faxton-Rentals-Downloads/releases/download/v1.2.0/Faxton-Rentals-Linux-x64.deb"
+    },
+    {
+      "name": "Faxton-Rentals-Linux-x86_64.AppImage",
+      "size": 108536152,
+      "browser_download_url": "https://github.com/musazaneerah4-crypto/Faxton-Rentals-Downloads/releases/download/v1.2.0/Faxton-Rentals-Linux-x86_64.AppImage"
+    },
+    {
+      "name": "Faxton-Rentals-Mac-arm64.dmg",
+      "size": 98865911,
+      "browser_download_url": "https://github.com/musazaneerah4-crypto/Faxton-Rentals-Downloads/releases/download/v1.2.0/Faxton-Rentals-Mac-arm64.dmg"
+    },
+    {
+      "name": "Faxton-Rentals-Mac-x64.dmg",
+      "size": 103442577,
+      "browser_download_url": "https://github.com/musazaneerah4-crypto/Faxton-Rentals-Downloads/releases/download/v1.2.0/Faxton-Rentals-Mac-x64.dmg"
+    },
+    {
+      "name": "Faxton-Rentals-Windows-arm64.exe",
+      "size": 87551785,
+      "browser_download_url": "https://github.com/musazaneerah4-crypto/Faxton-Rentals-Downloads/releases/download/v1.2.0/Faxton-Rentals-Windows-arm64.exe"
+    },
+    {
+      "name": "Faxton-Rentals-Windows-x64.exe",
+      "size": 81397220,
+      "browser_download_url": "https://github.com/musazaneerah4-crypto/Faxton-Rentals-Downloads/releases/download/v1.2.0/Faxton-Rentals-Windows-x64.exe"
+    }
+  ]
+}
