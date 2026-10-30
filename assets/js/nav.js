@@ -19,7 +19,7 @@ export function initHeader() {
   let ticking = false;
   const apply = () => {
     ticking = false;
-    header.classList.toggle("is-solid", always || window.scrollY > 24);
+    header.classList.toggle("is-solid", always || window.scrollY > 4);
   };
   const onScroll = () => {
     if (!ticking) { ticking = true; requestAnimationFrame(apply); }
