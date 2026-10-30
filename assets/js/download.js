@@ -1,7 +1,7 @@
 // The "Get Faxton Rentals everywhere" section: five device cards that open a picker with the real files
 // from the latest GitHub release (or clear "not available yet" states).
 import { CONFIG } from "./config.js";
-import { GROUPS, detectGroup, fmtSize, loadLatest } from "./download-core.js";
+import { GROUPS, detectGroup, fmtSize, loadLatest } from "./download-core.js?v=2026-10-30.2";
 import { $, $$, esc, icon, store, focusables } from "./ui.js";
 
 const mobile = () => window.matchMedia("(max-width: 700px)").matches;
