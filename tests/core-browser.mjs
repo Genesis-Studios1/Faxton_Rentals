@@ -72,6 +72,23 @@ try {
       body: JSON.stringify(release)
     })
   );
+  await context.route("https://firestore.googleapis.com/**", async (route) => {
+    const request = route.request();
+    const origin = request.headers().origin || "*";
+    const headers = {
+      "access-control-allow-origin": origin,
+      "access-control-allow-methods": "POST, OPTIONS",
+      "access-control-allow-headers": "content-type",
+      "access-control-max-age": "600"
+    };
+    if (request.method() === "OPTIONS") return route.fulfill({ status: 204, headers });
+    assert.equal(request.method(), "POST", "waitlist should use a POST request");
+    const body = JSON.parse(request.postData() || "{}");
+    assert.deepEqual(Object.keys(body.fields || {}).sort(), ["city", "createdAt", "email", "name", "role", "source"]);
+    assert.equal(body.fields.source.stringValue, "website");
+    assert.equal(body.fields.email.stringValue, "qa.visitor@example.com");
+    return route.fulfill({ status: 200, contentType: "application/json", headers, body: JSON.stringify({ name: "projects/faxton-rentals/databases/(default)/documents/waitlist/test" }) });
+  });
   const page = await context.newPage();
   const errors = [];
   const consoleErrors = [];
@@ -119,6 +136,12 @@ try {
   }));
   assert.ok(solidState.background.includes("255, 255, 255"), "header should turn white after scrolling");
   assert.ok(Math.abs(parseFloat(solidState.padding) - 10) < 0.1, "header should compact after scrolling");
+  const logoColors = await header.evaluate((el) => ({
+    mark: getComputedStyle(el.querySelector(".logo .lg-a")).fill,
+    wordmark: getComputedStyle(el.querySelector(".logo .lg-b")).fill
+  }));
+  assert.equal(logoColors.mark, "rgb(22, 153, 107)", "Faxton mark should return to its green brand colour after scrolling");
+  assert.equal(logoColors.wordmark, "rgb(18, 74, 56)", "the second logo colour should return to dark green after scrolling");
 
   await page.goto(base + "/", { waitUntil: "networkidle" });
   await page.locator("#download").scrollIntoViewIfNeeded();
@@ -131,6 +154,24 @@ try {
   assert.equal(windowsLinks.length, 2, "Windows picker should show both published installers");
   assert.ok(windowsLinks.every((url) => url.startsWith(`https://github.com/${repo}/releases/download/v1.2.0/`)),
     "Windows links should point to the published release");
+
+  // The visible Download now action opens the detected device picker.
+  await page.locator("[data-dl-now]").click();
+  await page.waitForSelector(".dlx-sheet");
+  assert.equal(await page.$eval(".dlx-card.open", (el) => el.dataset.g), "windows",
+    "Download now should open the detected Windows picker");
+  await page.locator(".dlx-sheet .dlx-x").click();
+
+  // The public waitlist form must submit the expected Firestore document and show confirmation.
+  await page.locator("#wl-name").fill("QA Visitor");
+  await page.locator("#wl-email").fill("qa.visitor@example.com");
+  await page.locator("#wl-role").selectOption("renter");
+  await page.locator("#wl-city").fill("Lagos");
+  await page.locator("[data-wl-form] button[type=submit]").click();
+  await page.waitForFunction(() => {
+    const done = document.querySelector("[data-wl-done]");
+    return done && !done.hidden;
+  });
 
   // The footer action on a page without a download section should navigate home and open the picker.
   await page.goto(base + "/contact/", { waitUntil: "networkidle" });
