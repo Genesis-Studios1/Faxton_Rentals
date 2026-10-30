@@ -472,79 +472,79 @@ for (const mode of ["denied", "abort", "error"]) {
   await page.keyboard.press("Escape"); await page.waitForTimeout(200);
   ok(!(await page.isVisible("#privacy-dialog")), "privacy window: Escape closes it");
   await page.evaluate(() => window.scrollTo({ top: document.body.scrollHeight, behavior: "instant" }));
-  await page.waitForSelector("#download-dialog");
-  await page.click("a[data-get-app]"); await page.waitForTimeout(250);
-  ok(await page.$eval("#download-dialog", (dialog) => dialog.open), "footer: 'Get the app' opens the shared device modal from any page");
-  await page.keyboard.press("Escape");
+  await page.click("a[data-get-app]"); await page.waitForTimeout(900);
+  ok(await page.evaluate(() => !!document.querySelector(".dlx-card.open")), "footer: 'Get the app' scrolls to the download section and opens the picker");
   await ctx.close();
 }
 
-// ====================================================================== 7. shared device-download modal and Features platform strip
+// ====================================================================== 7. download picker
 const GROUP_TITLES = { android: "Choose Android package", ios: "Install on iPhone", windows: "Choose Windows package", mac: "Choose Mac package", linux: "Choose Linux package" };
 const EXPECT = { android: ["Faxton-Rentals-Android.apk", "Faxton-Rentals-Android-x64.apk", "Faxton-Rentals-Android.aab"], windows: ["Faxton-Rentals-Windows-x64.exe", "Faxton-Rentals-Windows-arm64.exe"], mac: ["Faxton-Rentals-Mac-arm64.dmg", "Faxton-Rentals-Mac-x64.dmg"], linux: ["Faxton-Rentals-Linux-x64.AppImage", "Faxton-Rentals-Linux-arm64.AppImage", "Faxton-Rentals-Linux-x64.deb", "Faxton-Rentals-Linux-arm64.deb"] };
 for (const w of [1440, 390]) {
   const { ctx, page, state } = await newPage(browser, { width: w });
   await goto(page, "/");
-  await page.waitForSelector("#download-dialog");
-  ok((await page.textContent(".dl--compact h2")) === "Start exploring on your device.", `download@${w}: compact homepage CTA remains`);
-  ok((await page.$$(".dlx-card")).length === 0, `download@${w}: platform strip is no longer duplicated on Home`);
-  await page.click("[data-dl-now]"); await page.waitForTimeout(1200);
-  ok(await page.$eval("#download-dialog", (dialog) => dialog.open), `download@${w}: Download now opens a modal`);
-  const names = await page.$$eval(".dl-modal-card", (cards) => cards.map((x) => x.querySelector("b")?.textContent));
-  ok(names.join("|") === "Website|Android|iOS|Windows|macOS|Linux", `download@${w}: modal has all six platforms`, names.join("|"));
-  ok((await page.$eval('.dl-modal-card[href]', (a) => a.href)) === "https://faxton-rentals.web.app/", `download@${w}: Website opens the configured app`);
+  await page.locator("#download").scrollIntoViewIfNeeded(); await page.waitForTimeout(700);
+  const cardNames = await page.$$eval(".dlx-card .dlx-t", (e) => e.map((x) => x.innerText.replace(/\s+/g, " ").trim()));
+  ok(cardNames.join("|") === "Android Get the app|iOS Get the app|Windows Use on desktop|macOS Use on MacBook|Linux Use on desktop", `download@${w}: five cards with the app's labels`, cardNames.join("|"));
+  ok((await page.textContent(".dl h2")) === "Start exploring on your device." && /Download the Faxton Rentals app or continue on web\./.test(await page.textContent(".dl__lead")), `download@${w}: app wording`);
+  ok(/Get Faxton Rentals everywhere/i.test(await page.textContent(".dl .eyebrow")), `download@${w}: eyebrow`);
+  ok((await page.$eval(".dl a[data-app]", (a) => a.href)) === "https://faxton-rentals.web.app/", `download@${w}: Open the web app links to APP_URL`);
   for (const gid of ["android", "ios", "windows", "mac", "linux"]) {
-    await page.click(`.dl-modal-card[data-modal-platform="${gid}"]`);
-    await page.waitForTimeout(350);
-    const title = await page.textContent(".dl-modal__details .dlx-sheet header b");
-    ok(title === GROUP_TITLES[gid], `download@${w}: ${gid} opens the correct package list`, title);
+    await page.click(`.dlx-card[data-g="${gid}"] .dlx-head`); await page.waitForTimeout(350);
+    const title = await page.textContent(".dlx-sheet header b");
+    ok(title === GROUP_TITLES[gid], `download@${w}: ${gid} sheet title`, title);
     if (gid === "ios") {
-      ok(await page.isVisible(".dl-modal__details [data-safari]"), `download@${w}: iOS offers Add to Home Screen`);
-      await page.click(".dl-modal__details [data-safari]");
-      ok(/Safari/.test(await page.textContent(".dl-modal__details .dlx-how")) && /Add to Home Screen/.test(await page.textContent(".dl-modal__details .dlx-how")), `download@${w}: iOS instructions mention Safari and Add to Home Screen`);
-      await page.click(`.dl-modal-card[data-modal-platform="ios"]`);
-      await page.waitForTimeout(250);
-      const links = await page.$$eval(".dl-modal__details .dlx-sheet a.dlx-opt", (a) => a.map((x) => x.getAttribute("href")));
-      ok(links.length === 1 && links[0].endsWith("Faxton-Rentals-iPhone-unsigned.ipa") && links[0].startsWith(`https://github.com/${REPO}/releases/download/v1.2.3/`), `download@${w}: iOS package link comes from the latest release`, links.join());
+      ok(await page.isVisible("[data-safari]"), `download@${w}: iOS offers Add to Home Screen`);
+      await page.click("[data-safari]"); await page.waitForTimeout(200);
+      ok(/Safari/.test(await page.textContent(".dlx-how")) && /Add to Home Screen/.test(await page.textContent(".dlx-how")), `download@${w}: iOS instructions mention Safari and Add to Home Screen`);
+      const ipa = await page.$$eval(".dlx-sheet a.dlx-opt", (a) => a.map((x) => x.getAttribute("href")));
+      void ipa;
+      // the IPA option lives on the first screen: reopen to check it
+      await page.click(`.dlx-card[data-g="ios"] .dlx-head`); await page.click(`.dlx-card[data-g="ios"] .dlx-head`); await page.waitForTimeout(300);
+      const links = await page.$$eval(".dlx-sheet a.dlx-opt", (a) => a.map((x) => x.getAttribute("href")));
+      ok(links.length === 1 && links[0].endsWith("Faxton-Rentals-iPhone-unsigned.ipa") && links[0].startsWith(`https://github.com/${REPO}/releases/download/v1.2.3/`), `download@${w}: iOS .ipa link comes from the release`, links.join());
     } else {
-      const links = await page.$$eval(".dl-modal__details .dlx-opt[href]", (a) => a.map((x) => x.getAttribute("href").split("/").pop()));
+      const links = await page.$$eval(".dlx-sheet a.dlx-opt", (a) => a.map((x) => x.getAttribute("href").split("/").pop()));
       ok(JSON.stringify(links) === JSON.stringify(EXPECT[gid]), `download@${w}: ${gid} options are the real release files`, links.join(", "));
-      const sub = await page.$eval(".dl-modal__details .dlx-ot small", (e) => e.textContent);
-      ok(/v1\.2\.3/.test(sub) && /MB/.test(sub), `download@${w}: ${gid} shows version and size`, sub);
+      const sub = await page.$eval(".dlx-sheet .dlx-ot small", (e) => e.textContent); ok(/v1\.2\.3/.test(sub) && /MB/.test(sub), `download@${w}: ${gid} shows version and size`, sub);
     }
+    if (gid === "linux") await page.screenshot({ path: join(OUT, `download_sheet_${w}.png`) });
+    await page.keyboard.press("Escape"); await page.waitForTimeout(150);
+    ok(!(await page.$(".dlx-sheet")), `download@${w}: Escape closes the ${gid} sheet`);
   }
-  ok(state.ghCalls === 1, `download@${w}: GitHub release data is requested once`, String(state.ghCalls));
-  await page.keyboard.press("Escape"); await page.waitForTimeout(150);
-  ok(!(await page.$eval("#download-dialog", (dialog) => dialog.open)), `download@${w}: Escape closes the modal`);
+  ok(state.ghCalls === 1, `download@${w}: the GitHub API is asked once`, String(state.ghCalls));
   await ctx.close();
 }
 {
+  // missing files -> "Not available yet"
   const { ctx, page } = await newPage(browser, { width: 1440, github: "partial" });
-  await goto(page, "/"); await page.waitForSelector("#download-dialog");
-  await page.click("[data-dl-now]"); await page.waitForTimeout(700);
-  await page.click('.dl-modal-card[data-modal-platform="android"]'); await page.waitForTimeout(200);
-  const t = await page.$$eval(".dl-modal__details .dlx-opt", (o) => o.map((x) => [x.tagName, x.innerText.replace(/\s+/g, " ")]));
+  await goto(page, "/"); await page.locator("#download").scrollIntoViewIfNeeded(); await page.waitForTimeout(600);
+  await page.click('.dlx-card[data-g="android"] .dlx-head'); await page.waitForTimeout(300);
+  const t = await page.$$eval(".dlx-sheet .dlx-opt", (o) => o.map((x) => [x.tagName, x.innerText.replace(/\s+/g, " ")]));
   ok(t[0][0] === "A" && t[1][0] === "DIV" && /Not available yet/.test(t[1][1]) && /Not available yet/.test(t[2][1]), "download: files missing from the release show 'Not available yet'", JSON.stringify(t));
-  await page.click('.dl-modal-card[data-modal-platform="mac"]'); await page.waitForTimeout(150);
-  ok((await page.$$eval(".dl-modal__details .dlx-opt.off", (o) => o.length)) === 2, "download: macOS options are 'Not available yet' when the release has none");
+  await page.click('.dlx-card[data-g="mac"] .dlx-head'); await page.waitForTimeout(300);
+  ok((await page.$$eval(".dlx-sheet .dlx-opt.off", (o) => o.length)) === 2, "download: macOS options are 'Not available yet' when the release has none");
   await ctx.close();
 }
 {
-  const { ctx, page } = await newPage(browser, { width: 1440, github: "404" });
-  await goto(page, "/"); await page.waitForSelector("#download-dialog");
-  await page.click("[data-dl-now]"); await page.waitForTimeout(700);
-  await page.click('.dl-modal-card[data-modal-platform="windows"]'); await page.waitForTimeout(250);
-  ok((await page.$$eval(".dl-modal__details .dlx-opt.off", (o) => o.length)) === 2 && /Not available yet/.test(await page.textContent(".dl-modal__details")), "download: no release published yet -> 'Not available yet'");
+  const { ctx, page, state } = await newPage(browser, { width: 1440, github: "404" });
+  await goto(page, "/"); await page.locator("#download").scrollIntoViewIfNeeded(); await page.waitForTimeout(600);
+  await page.click('.dlx-card[data-g="windows"] .dlx-head'); await page.waitForTimeout(300);
+  ok((await page.$$eval(".dlx-sheet .dlx-opt.off", (o) => o.length)) === 2 && /Not available yet/.test(await page.textContent(".dlx-sheet")), "download: no release published yet -> 'Not available yet'");
   await ctx.close();
 }
 {
   const { ctx, page, state } = await newPage(browser, { width: 1440, github: "abort" });
-  await goto(page, "/"); await page.waitForSelector("#download-dialog");
-  await page.click("[data-dl-now]"); await page.waitForTimeout(700);
-  await page.click('.dl-modal-card[data-modal-platform="windows"]'); await page.waitForTimeout(300);
-  ok(/Couldn’t reach the download server/.test(await page.textContent(".dl-modal__details")) && (await page.isVisible(".dl-modal__details [data-retry]")), "download: GitHub unreachable -> clear message and a retry button");
-  state.github = "ok"; await page.click(".dl-modal__details [data-retry]"); await page.waitForTimeout(700);
-  ok((await page.$$eval(".dl-modal__details .dlx-opt[href]", (a) => a.length)) === 2, "download: Try again loads the files once GitHub is back");
+  await goto(page, "/"); await page.locator("#download").scrollIntoViewIfNeeded(); await page.waitForTimeout(800);
+  await page.click('.dlx-card[data-g="windows"] .dlx-head'); await page.waitForTimeout(400);
+  ok(/Couldn’t reach the download server/.test(await page.textContent(".dlx-sheet")) && (await page.isVisible("[data-retry]")), "download: GitHub unreachable -> clear message and a retry button", (await page.textContent(".dlx-sheet")).slice(0, 100));
+  await page.screenshot({ path: join(OUT, "download_offline_1440.png") });
+  state.github = "ok"; await page.click("[data-retry]"); await page.waitForTimeout(700);
+  ok((await page.$$eval(".dlx-sheet a.dlx-opt", (a) => a.length)) === 2, "download: Try again loads the files once GitHub is back");
+  await page.reload({ waitUntil: "networkidle" }); state.github = "abort";
+  await page.locator("#download").scrollIntoViewIfNeeded(); await page.waitForTimeout(500);
+  await page.click('.dlx-card[data-g="windows"] .dlx-head'); await page.waitForTimeout(400);
+  ok((await page.$$eval(".dlx-sheet a.dlx-opt", (a) => a.length)) === 2, "download: a saved copy of the last release is used while GitHub is unreachable");
   await ctx.close();
 }
 {
@@ -559,29 +559,18 @@ for (const w of [1440, 390]) {
     const mobile = gid === "android" || gid === "ios";
     const { ctx, page } = await newPage(browser, { width: mobile ? 390 : 1440, ua, mobile });
     await goto(page, "/");
-    await page.waitForSelector("#download-dialog");
-    ok(await page.$eval(`.dl-modal-card[data-modal-platform="${gid}"]`, (e) => e.classList.contains("hot")), `Download modal highlights ${gid} visitors`);
-    await page.click("[data-dl-now]"); await page.waitForTimeout(300);
-    ok((await page.$$eval(".dl-modal-card", (cards) => cards.length)) === 5 + 1, `Download now (${gid}): shows the full device picker`);
-    await page.click(`.dl-modal-card[data-modal-platform="${gid}"]`);
-    await page.waitForTimeout(200);
-    ok((await page.textContent(".dl-modal__details .dlx-sheet header b")) === GROUP_TITLES[gid], `Download now (${gid}): opens the correct platform options`);
+    ok((await page.$eval(".dlx-card.hot", (e) => e.dataset.g)) === gid, `Download now (${gid}): the visitor's device is highlighted`);
+    await page.click("[data-dl-now]"); await page.waitForTimeout(1200);
+    const title = await page.textContent(".dlx-sheet header b").catch(() => "");
+    ok(title === GROUP_TITLES[gid], `Download now (${gid}): opens the ${gid} picker`, title);
     await ctx.close();
   }
   const { ctx, page } = await newPage(browser, { width: 820 });
   await goto(page, "/features/");
-  ok(await page.isVisible(".frf-platform-grid"), "features: platform strip appears below messaging phone preview");
-  ok((await page.$$eval(".frf-platform-card", (cards) => cards.length)) === 6, "features: six platform cards appear");
-  const phoneBox = await page.locator(".frf-device--chat .frf-phone").boundingBox();
-  const captionBox = await page.locator(".frf-demo-caption").boundingBox();
-  ok(captionBox.y >= phoneBox.y + phoneBox.height - 1, "features: interactive preview caption sits below phone frame");
-  await page.click('[data-open-download][data-group="android"]');
-  await page.waitForTimeout(250);
-  ok(await page.$eval("#download-dialog", (dialog) => dialog.open), "features: platform cards open the download modal");
-  ok((await page.textContent(".dl-modal__details .dlx-sheet header b")) === GROUP_TITLES.android, "features: platform shortcut opens the matching Android options");
-  await goto(page, "/about/");
-  ok(await page.isVisible(".dl--mini"), "about: has a compact download call-to-action");
-  ok((await page.$$(".dlx-card")).length === 0, "about: does not repeat the device platform strip");
+  ok(await page.isVisible(".dl--mini"), "features: has the small download section");
+  await page.click("[data-dl-now]"); await page.waitForTimeout(900);
+  ok(!!(await page.$(".dlx-sheet")), "features: Download now works in the small section too");
+  await goto(page, "/about/"); ok(await page.isVisible(".dl--mini"), "about: has the small download section");
   await ctx.close();
 }
 
