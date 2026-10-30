@@ -136,6 +136,7 @@ try {
   }));
   assert.ok(solidState.background.includes("255, 255, 255"), "header should turn white after scrolling");
   assert.ok(Math.abs(parseFloat(solidState.padding) - 10) < 0.1, "header should compact after scrolling");
+  await page.waitForTimeout(350); // allow the logo fill transition to finish before reading the final colours
   const logoColors = await header.evaluate((el) => ({
     mark: getComputedStyle(el.querySelector(".logo .lg-a")).fill,
     wordmark: getComputedStyle(el.querySelector(".logo .lg-b")).fill
