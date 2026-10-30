@@ -159,5 +159,9 @@ export function initDownload() {
     freshRoots.forEach((r) => io.observe(r));
   } else start();
   // #download in the address bar
-  if (window.location.hash === "#download") start();
+  if (window.location.hash === "#download") {
+    start();
+    // A direct #download entry (including the footer action from another page) should open the detected device picker.
+    activeOpenDetected?.();
+  }
 }
