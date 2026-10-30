@@ -125,7 +125,7 @@ try {
   await page.locator('.dlx-card[data-g="windows"] .dlx-head').click();
   await page.waitForSelector('.dlx-sheet a.dlx-opt[href]');
   const windowsLinks = await page.$$eval(
-    '.dlx-card[data-g="windows"] .dlx-sheet a.dlx-opt[href]',
+    '.dlx-sheet a.dlx-opt[href]',
     (anchors) => anchors.map((anchor) => anchor.getAttribute("href"))
   );
   assert.equal(windowsLinks.length, 2, "Windows picker should show both published installers");
@@ -158,7 +158,7 @@ try {
   await fallbackPage.locator('.dlx-card[data-g="windows"] .dlx-head').click();
   await fallbackPage.waitForSelector('.dlx-sheet a.dlx-opt[href]');
   const fallbackLinks = await fallbackPage.$$eval(
-    '.dlx-card[data-g="windows"] .dlx-sheet a.dlx-opt[href]',
+    '.dlx-sheet a.dlx-opt[href]',
     (anchors) => anchors.map((anchor) => anchor.getAttribute("href"))
   );
   assert.equal(fallbackLinks.length, 2, "manifest fallback should keep Windows downloads available");
