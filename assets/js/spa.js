@@ -4,11 +4,18 @@ const pageCache = new Map();
 const inFlightPages = new Map();
 const preloadedImages = new Set();
 const MAX_CACHE = 7;
+const PAGE_CACHE_TTL = 60_000;
 let activeController = null;
 let progressTimer = 0;
 let progressEl = null;
 
 const pageKey = (url) => url.pathname + url.search;
+function cachedPage(key) {
+  const entry = pageCache.get(key);
+  if (!entry) return null;
+  if (Date.now() - entry.savedAt > PAGE_CACHE_TTL) { pageCache.delete(key); return null; }
+  return entry.html;
+}
 const isLocalPage = (url) => url.origin === location.origin &&
   !/\.(?:pdf|zip|exe|dmg|apk|msi|png|jpe?g|webp|svg|ico|woff2?|ttf|mp4|mp3)$/i.test(url.pathname);
 
@@ -34,12 +41,13 @@ function stopProgress() {
 
 async function loadHTML(url, { fresh = false } = {}) {
   const key = pageKey(url);
-  if (!fresh && pageCache.has(key)) return pageCache.get(key);
+  const cached = fresh ? null : cachedPage(key);
+  if (cached !== null) return cached;
   if (!fresh && inFlightPages.has(key)) return inFlightPages.get(key);
   const request = (async () => {
     const response = await fetch(key, {
       method: "GET",
-      cache: fresh ? "no-cache" : "default",
+      cache: "no-cache",
       credentials: "same-origin",
       headers: { "X-Faxton-Navigation": "1" }
     });
@@ -47,7 +55,7 @@ async function loadHTML(url, { fresh = false } = {}) {
     const type = response.headers.get("content-type") || "";
     if (type && type.indexOf("text/html") === -1) throw new Error("Target is not an HTML page");
     const html = await response.text();
-    pageCache.set(key, html);
+    pageCache.set(key, { html, savedAt: Date.now() });
     while (pageCache.size > MAX_CACHE) pageCache.delete(pageCache.keys().next().value);
     return html;
   })();
@@ -59,7 +67,7 @@ async function loadHTML(url, { fresh = false } = {}) {
   }
 }
 async function prefetch(url) {
-  if (!isLocalPage(url) || url.pathname === location.pathname || pageCache.has(pageKey(url))) return;
+  if (!isLocalPage(url) || url.pathname === location.pathname || cachedPage(pageKey(url)) !== null) return;
   try {
     const html = await loadHTML(new URL(url.pathname + url.search, location.origin));
     const parsed = new DOMParser().parseFromString(html, "text/html");
