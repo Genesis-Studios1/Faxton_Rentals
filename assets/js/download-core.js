@@ -92,8 +92,7 @@ export async function loadLatest({ repo, fetchImpl = globalThis.fetch, storage =
     try { storage?.set("fxr.release", JSON.stringify({ t: now, repo, data: release })); } catch { /* storage is optional */ }
     return { state: "ok", release, stale: false };
   } catch {
-    if (cached) return { state: "ok", release: cached.data, stale: true };
-    // Keep downloads usable when GitHub's unauthenticated API is rate-limited or temporarily offline.
+    // Prefer the current same-site manifest over an older browser cache.
     try {
       const fallbackUrl = new URL("../release-manifest.json", import.meta.url).href;
       const fallbackResponse = await fetchImpl(fallbackUrl, {
@@ -109,7 +108,8 @@ export async function loadLatest({ repo, fetchImpl = globalThis.fetch, storage =
           return { state: "ok", release: fallbackRelease, stale: true };
         }
       }
-    } catch { /* retain the normal offline state below */ }
+    } catch { /* continue to the saved browser copy below */ }
+    if (cached) return { state: "ok", release: cached.data, stale: true };
     return { state: "offline", release: null, stale: false };
   } finally {
     if (timer) clearTimeout(timer);
