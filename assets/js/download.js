@@ -1,7 +1,7 @@
 // The "Get Faxton Rentals everywhere" section: five device cards that open a picker with the real files
 // from the latest GitHub release (or clear "not available yet" states).
 import { CONFIG } from "./config.js";
-import { GROUPS, detectGroup, fmtSize, loadLatest } from "./download-core.js?v=2026-10-30.2";
+import { GROUPS, detectGroup, fmtSize, loadLatest } from "./download-core.js?v=2026-10-30.3";
 import { $, $$, esc, icon, store, focusables } from "./ui.js";
 
 const mobile = () => window.matchMedia("(max-width: 700px)").matches;
@@ -9,14 +9,26 @@ let latest = { phase: "loading", release: null, stale: false };
 let loading = null;
 
 function load(force = false) {
+  if (loading && !force) return loading;
   latest = { ...latest, phase: "loading" };
   notify();
-  loading = loadLatest({ repo: CONFIG.RELEASES_REPO, storage: store, force }).then((r) => {
-    latest = { phase: r.state, release: r.release, stale: r.stale };
-    notify();
-    return latest;
-  });
-  return loading;
+  const request = loadLatest({ repo: CONFIG.RELEASES_REPO, storage: store, force })
+    .then((r) => {
+      latest = { phase: r.state, release: r.release, stale: r.stale };
+      notify();
+      return latest;
+    })
+    .catch((error) => {
+      console.error("[Faxton] Download list could not load:", error);
+      latest = { phase: "offline", release: null, stale: false };
+      notify();
+      return latest;
+    })
+    .finally(() => {
+      if (loading === request) loading = null;
+    });
+  loading = request;
+  return request;
 }
 const listeners = new Set();
 const mountedRoots = new WeakSet();
@@ -25,7 +37,17 @@ const notify = () => listeners.forEach((f) => f());
 
 // Keep document-level listeners single-instance when the router revisits the download panel.
 document.addEventListener("fx:pagewillchange", () => { listeners.clear(); activeOpenDetected = null; });
-document.addEventListener("fx:open-download", () => activeOpenDetected?.());
+document.addEventListener("fx:open-download", () => {
+  if (activeOpenDetected) { activeOpenDetected(); return; }
+  const root = document.body.dataset.root || "";
+  const target = new URL(root + "#download", window.location.href);
+  if (target.pathname === window.location.pathname) {
+    const section = document.getElementById("download");
+    if (section) section.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
+  window.location.assign(target.href);
+});
 document.addEventListener("click", (event) => {
   if (event.target.closest?.(".dlx-head, [data-dl-now]")) load();
 }, { capture: true });
@@ -138,6 +160,9 @@ export function initDownload() {
     const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { start(); io.disconnect(); } }, { rootMargin: "400px 0px" });
     freshRoots.forEach((r) => io.observe(r));
   } else start();
-  // #download in the address bar
-  if (window.location.hash === "#download") start();
+  // A footer link from another page arrives here with #download; open the same picker.
+  if (window.location.hash === "#download") {
+    start();
+    window.requestAnimationFrame(() => activeOpenDetected?.());
+  }
 }
