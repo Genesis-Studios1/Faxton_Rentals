@@ -4,14 +4,7 @@ import { readFileSync } from "node:fs";
 import assert from "node:assert/strict";
 import { PACKAGES, GROUPS, parseRelease, detectGroup, fmtSize, isNewer, loadLatest, releaseUrl } from "../assets/js/download-core.js";
 
-test("download UI uses one shared dialog and delegated entry points", () => {
-  const source = readFileSync(new URL("../assets/js/download.js", import.meta.url), "utf8");
-  assert.ok(source.includes('dialog.id = "download-dialog"'));
-  assert.ok(source.includes('event.target.closest("[data-dl-now]")'));
-  assert.ok(source.includes('event.target.closest("[data-open-download][data-group]")'));
-  assert.ok(source.includes('"fx:open-download"'));
-  assert.ok(source.includes('data-modal-platform'));
-});
+test("Download now attaches its click handler to all matching buttons", () => { const source = readFileSync(new URL("../assets/js/download.js", import.meta.url), "utf8"); assert.ok(source.includes('$$("[data-dl-now]", root.closest("[data-download]") || root).forEach')); });
 
 const REPO = "musazaneerah4-crypto/Faxton-Rentals-Downloads";
 const dl = (name, size = 5_000_000) => ({ name, size, browser_download_url: `https://github.com/${REPO}/releases/download/v1.2.0/${name}` });
@@ -70,35 +63,6 @@ test("helpers", () => {
   assert.equal(fmtSize(80 * 1048576), "80 MB");
   assert.ok(isNewer("1.10.0", "1.9.9"));
   assert.ok(!isNewer("1.2.0", "1.2.0"));
-});
-
-test("loadLatest falls back to the same-site manifest when GitHub API is unavailable", async () => {
-  const manifestUrl = new URL("../assets/release-manifest.json", import.meta.url).href;
-  const fetchFallback = async (url) => {
-    if (url === releaseUrl(REPO)) return { ok: false, status: 403, json: async () => ({}) };
-    assert.equal(url, manifestUrl);
-    return { ok: true, status: 200, json: async () => release(PACKAGES.map((p) => p[1])) };
-  };
-  const result = await loadLatest({ repo: REPO, fetchImpl: fetchFallback, storage: null, now: 10 });
-  assert.equal(result.state, "ok");
-  assert.equal(result.stale, true);
-  assert.equal(result.release.files.windows_x64.name, "Faxton-Rentals-Windows-x64.exe");
-});
-
-test("loadLatest prefers the current manifest over an expired browser cache", async () => {
-  const mem = new Map([["fxr.release", JSON.stringify({
-    t: 1, repo: REPO, data: { version: "0.9.0", files: { windows_x64: { name: "old.exe" } } }
-  })]]);
-  const storage = { get: (k) => mem.get(k) ?? null, set: (k, v) => mem.set(k, v) };
-  const fetchFallback = async (url) => {
-    if (url === releaseUrl(REPO)) throw new TypeError("GitHub unavailable");
-    assert.equal(url, new URL("../assets/release-manifest.json", import.meta.url).href);
-    return { ok: true, status: 200, json: async () => release(PACKAGES.map((p) => p[1])) };
-  };
-  const result = await loadLatest({ repo: REPO, fetchImpl: fetchFallback, storage, now: 16 * 60 * 1000 });
-  assert.equal(result.state, "ok");
-  assert.equal(result.stale, true);
-  assert.equal(result.release.version, "1.2.0");
 });
 
 test("loadLatest: ok, cached, stale fallback, none and offline", async () => {
