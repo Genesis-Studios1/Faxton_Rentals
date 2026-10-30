@@ -112,7 +112,7 @@ try {
     "header should become solid after scrolling. Diagnostics: " + JSON.stringify({
       ...navDiagnostics, pageErrors: errors, consoleErrors, failedRequests, scriptResponses
     }));
-  await page.waitForFunction(() => parseFloat(getComputedStyle(document.querySelector(".site-header")).paddingTop) <= 10.5);
+  await page.waitForFunction(() => Math.abs(parseFloat(getComputedStyle(document.querySelector(".site-header")).paddingTop) - 10) < 0.1);
   const solidState = await header.evaluate((el) => ({
     background: getComputedStyle(el).backgroundColor,
     padding: getComputedStyle(el).paddingTop
