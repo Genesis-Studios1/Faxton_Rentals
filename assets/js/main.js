@@ -1,8 +1,8 @@
-import { initHeader } from "./nav.js?v=2026-10-30.4";
+import { initHeader } from "./nav.js?v=2026-10-30.5";
 import { initReveal } from "./reveal.js?v=2026-10-30.4";
 import { initFooter } from "./footer.js?v=2026-10-30.4";
 import { initSpaRouter } from "./spa.js?v=2026-10-30.4";
-import { initDownload } from "./download.js?v=2026-10-30.7";
+import { initDownload } from "./download.js?v=2026-10-30.8";
 
 const has = (sel) => document.querySelector(sel);
 let pageBooting = false;
