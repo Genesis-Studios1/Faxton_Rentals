@@ -95,7 +95,7 @@ try {
   await page.goto(base + "/", { waitUntil: "networkidle" });
   await page.locator("#download").scrollIntoViewIfNeeded();
   await page.locator('.dlx-card[data-g="windows"] .dlx-head').click();
-  await page.waitForSelector('.dlx-card[data-g="windows"].open .dlx-sheet a.dlx-opt[href]');
+  await page.waitForSelector('.dlx-sheet a.dlx-opt[href]');
   const windowsLinks = await page.$$eval(
     '.dlx-card[data-g="windows"] .dlx-sheet a.dlx-opt[href]',
     (anchors) => anchors.map((anchor) => anchor.getAttribute("href"))
@@ -128,7 +128,7 @@ try {
   await fallbackPage.goto(base + "/", { waitUntil: "networkidle" });
   await fallbackPage.locator("#download").scrollIntoViewIfNeeded();
   await fallbackPage.locator('.dlx-card[data-g="windows"] .dlx-head').click();
-  await fallbackPage.waitForSelector('.dlx-card[data-g="windows"].open .dlx-sheet a.dlx-opt[href]');
+  await fallbackPage.waitForSelector('.dlx-sheet a.dlx-opt[href]');
   const fallbackLinks = await fallbackPage.$$eval(
     '.dlx-card[data-g="windows"] .dlx-sheet a.dlx-opt[href]',
     (anchors) => anchors.map((anchor) => anchor.getAttribute("href"))
