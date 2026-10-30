@@ -128,7 +128,7 @@ function mountPicker(root) {
 }
 
 export function initDownload() {
-  const roots = $("[data-download]");
+  const roots = $$("[data-download]");
   if (!roots.length) { activeOpenDetected = null; return; }
   const freshRoots = roots.filter((root) => !mountedRoots.has(root));
   if (!freshRoots.length) return;
