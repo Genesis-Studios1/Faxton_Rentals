@@ -35,7 +35,12 @@ test("parseRelease falls back to patterns and never mixes up architectures", () 
   assert.equal(r.files.iphone, undefined);
 });
 
-test("parseRelease recognises the published Linux x86_64 AppImage", () => {\n  const r = parseRelease(release(["Faxton-Rentals-Linux-x86_64.AppImage"]), REPO);\n  assert.equal(r.files.linux_x64.name, "Faxton-Rentals-Linux-x86_64.AppImage");\n});\n\ntest("parseRelease ignores links that do not point into the repository's release downloads", () => {
+test("parseRelease recognises the published Linux x86_64 AppImage", () => {
+  const r = parseRelease(release(["Faxton-Rentals-Linux-x86_64.AppImage"]), REPO);
+  assert.equal(r.files.linux_x64.name, "Faxton-Rentals-Linux-x86_64.AppImage");
+});
+
+test("parseRelease ignores links that do not point into the repository's release downloads", () => {
   const evil = { tag_name: "v9", assets: [{ name: "Faxton-Rentals-Android.apk", size: 1, browser_download_url: "https://evil.example/Faxton-Rentals-Android.apk" }] };
   assert.deepEqual(parseRelease(evil, REPO).files, {});
   assert.equal(parseRelease(null, REPO), null);
