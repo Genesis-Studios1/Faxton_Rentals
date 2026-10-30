@@ -85,6 +85,22 @@ test("loadLatest falls back to the same-site manifest when GitHub API is unavail
   assert.equal(result.release.files.windows_x64.name, "Faxton-Rentals-Windows-x64.exe");
 });
 
+test("loadLatest prefers the current manifest over an expired browser cache", async () => {
+  const mem = new Map([["fxr.release", JSON.stringify({
+    t: 1, repo: REPO, data: { version: "0.9.0", files: { windows_x64: { name: "old.exe" } } }
+  })]]);
+  const storage = { get: (k) => mem.get(k) ?? null, set: (k, v) => mem.set(k, v) };
+  const fetchFallback = async (url) => {
+    if (url === releaseUrl(REPO)) throw new TypeError("GitHub unavailable");
+    assert.equal(url, new URL("../assets/release-manifest.json", import.meta.url).href);
+    return { ok: true, status: 200, json: async () => release(PACKAGES.map((p) => p[1])) };
+  };
+  const result = await loadLatest({ repo: REPO, fetchImpl: fetchFallback, storage, now: 16 * 60 * 1000 });
+  assert.equal(result.state, "ok");
+  assert.equal(result.stale, true);
+  assert.equal(result.release.version, "1.2.0");
+});
+
 test("loadLatest: ok, cached, stale fallback, none and offline", async () => {
   const mem = new Map();
   const storage = { get: (k) => mem.get(k) ?? null, set: (k, v) => mem.set(k, v) };
