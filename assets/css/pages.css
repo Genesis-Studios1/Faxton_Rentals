@@ -830,8 +830,7 @@ body[data-page="home"] .home-intro-copy .link-arrow { margin-top:10px; }
 
 
 /* ===================== Consistent, compact public-site system ===================== */
-.site-header, body[data-page="home"] .site-header { padding:16px 0; }
-.site-header.is-solid, body[data-page="home"] .site-header.is-solid { padding:10px 0; }
+.site-header, body[data-page="home"] .site-header { padding:10px 0; }
 .site-header .bar, body[data-page="home"] .site-header .bar {
   display:grid; grid-template-columns:auto minmax(0,1fr) auto;
   align-items:center; gap:clamp(12px,1.8vw,24px);
@@ -1022,8 +1021,7 @@ body[data-page="home"] .home-intro-copy .lead { font-size:clamp(14px,1.25vw,16.5
 
 
 /* Layout repair: preserve the individual page designs while sharing one header scale. */
-body[data-page] .site-header { padding:16px 0; }
-body[data-page] .site-header.is-solid { padding:10px 0; }
+body[data-page] .site-header { padding:10px 0 !important; }
 body[data-page] .site-header .bar {
   width:min(100% - 2 * var(--gutter),1340px); max-width:1340px;
   margin-inline:auto; display:grid; grid-template-columns:auto minmax(0,1fr) auto;
