@@ -16,23 +16,30 @@ export function initHeader() {
   const header = $(".site-header");
   if (!header) return;
   const always = header.hasAttribute("data-solid");
+  let ticking = false;
   const readScrollPosition = () => Math.max(
     window.scrollY || 0,
     window.pageYOffset || 0,
-    document.scrollingElement?.scrollTop || 0,
     document.documentElement?.scrollTop || 0,
     document.body?.scrollTop || 0
   );
-  // Keep the class update synchronous with the scroll event so the visual state cannot lag.
-  const syncScrollState = () => {
+  const apply = () => {
+    ticking = false;
     header.classList.toggle("is-solid", always || readScrollPosition() > 8);
   };
-  syncScrollState();
-  listen(window, "scroll", syncScrollState, { passive: true });
-  listen(document, "scroll", syncScrollState, { passive: true, capture: true });
-  listen(window, "pageshow", syncScrollState);
-  listen(window, "resize", syncScrollState, { passive: true });
-  listen(document, "visibilitychange", () => { if (!document.hidden) syncScrollState(); });
+  const onScroll = () => {
+    if (ticking) return;
+    ticking = true;
+    if ("requestAnimationFrame" in window) window.requestAnimationFrame(apply);
+    else apply();
+  };
+  // Listen on both targets: regular document scrolling and nested/browser scroll implementations.
+  apply();
+  listen(window, "scroll", onScroll, { passive: true });
+  listen(document, "scroll", onScroll, { passive: true, capture: true });
+  listen(window, "pageshow", apply);
+  listen(window, "resize", apply, { passive: true });
+  listen(document, "visibilitychange", () => { if (!document.hidden) apply(); });
 
   const btn = $(".menu-btn", header);
   const menu = $("#mobile-menu");
