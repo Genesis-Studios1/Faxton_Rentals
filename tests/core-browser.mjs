@@ -74,7 +74,17 @@ try {
   );
   const page = await context.newPage();
   const errors = [];
+  const consoleErrors = [];
+  const failedRequests = [];
+  const scriptResponses = [];
   page.on("pageerror", (error) => errors.push(error.message));
+  page.on("console", (message) => { if (message.type() === "error") consoleErrors.push(message.text()); });
+  page.on("requestfailed", (request) => failedRequests.push(request.url() + " :: " + request.failure()?.errorText));
+  page.on("response", (response) => {
+    if (/assets\/js\/(?:main|nav)\.js/.test(response.url())) {
+      scriptResponses.push({ url: response.url(), status: response.status() });
+    }
+  });
   await page.goto(base + "/features/", { waitUntil: "networkidle" });
 
   const header = page.locator(".site-header");
@@ -83,9 +93,25 @@ try {
   const topPadding = await header.evaluate((el) => getComputedStyle(el).paddingTop);
   assert.equal(topPadding, "16px", "header should keep its expanded top-of-page spacing");
 
+  await page.evaluate(() => {
+    window.__testScrollEvents = 0;
+    window.addEventListener("scroll", () => { window.__testScrollEvents += 1; }, { passive: true });
+  });
   await page.locator("#services").evaluate((el) => el.scrollIntoView({ block: "start", behavior: "instant" }));
   await page.waitForFunction(() => window.scrollY > 8);
-  await page.waitForFunction(() => document.querySelector(".site-header")?.classList.contains("is-solid"));
+  await page.waitForTimeout(150);
+  const navDiagnostics = await page.evaluate(() => ({
+    scrollY: window.scrollY,
+    rootScrollTop: document.scrollingElement?.scrollTop,
+    scrollEvents: window.__testScrollEvents,
+    solid: document.querySelector(".site-header")?.classList.contains("is-solid"),
+    mainScript: performance.getEntriesByType("resource").map((x) => x.name).filter((x) => x.includes("main.js")),
+    navScript: performance.getEntriesByType("resource").map((x) => x.name).filter((x) => x.includes("nav.js"))
+  }));
+  assert.equal(navDiagnostics.solid, true,
+    "header should become solid after scrolling. Diagnostics: " + JSON.stringify({
+      ...navDiagnostics, pageErrors: errors, consoleErrors, failedRequests, scriptResponses
+    }));
   const solidState = await header.evaluate((el) => ({
     background: getComputedStyle(el).backgroundColor,
     padding: getComputedStyle(el).paddingTop
