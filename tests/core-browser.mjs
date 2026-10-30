@@ -83,7 +83,8 @@ try {
   const topPadding = await header.evaluate((el) => getComputedStyle(el).paddingTop);
   assert.equal(topPadding, "16px", "header should keep its expanded top-of-page spacing");
 
-  await page.evaluate(() => window.scrollTo(0, 650));
+  await page.locator("#services").evaluate((el) => el.scrollIntoView({ block: "start", behavior: "instant" }));
+  await page.waitForFunction(() => window.scrollY > 8);
   await page.waitForFunction(() => document.querySelector(".site-header")?.classList.contains("is-solid"));
   const solidState = await header.evaluate((el) => ({
     background: getComputedStyle(el).backgroundColor,
