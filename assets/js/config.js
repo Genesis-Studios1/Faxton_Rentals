@@ -2,14 +2,14 @@
 // so the site still works if the config file is missing or partly empty.
 const DEFAULTS = {
   SITE_URL: "",
-  APP_URL: "https://faxton-rentals.web.app",
+  APP_URL: "https://faxton-rentals.web.app/app",
   SUPPORT_EMAIL: "",
   PHONE: "",
   WHATSAPP: "",
   ADDRESS: "",
   SOCIALS: { instagram: "", linkedin: "", x: "", youtube: "", tiktok: "", pinterest: "" },
   RELEASES_REPO: "musazaneerah4-crypto/Faxton-Rentals-Downloads",
-  SITE_VERSION: "2026-10-26.1",
+  SITE_VERSION: "2026-10-30.4",
   FIREBASE: { projectId: "faxton-rentals", apiKey: "" },
 };
 
