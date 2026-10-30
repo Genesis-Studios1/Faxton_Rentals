@@ -136,7 +136,7 @@ try {
   await page.goto(base + "/contact/", { waitUntil: "networkidle" });
   await page.locator("a[data-get-app]").click();
   await page.waitForURL((url) => url.pathname === "/" && url.hash === "#download");
-  await page.waitForSelector(".dlx-card.open .dlx-sheet");
+  await page.waitForSelector(".dlx-sheet");
   assert.equal(await page.$eval(".dlx-card.open", (el) => el.dataset.g), "windows",
     "footer Get the app action should open the detected device picker");
   assert.deepEqual(errors, [], "normal download flow should not produce browser JavaScript errors");
