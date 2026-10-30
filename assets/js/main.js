@@ -14,7 +14,7 @@ function bootPage() {
     initFooter();
     initReveal();
     if (has("[data-waitlist]")) import("./waitlist.js?v=2026-10-30.4").then((m) => m.initWaitlist()).catch(() => {});
-    import("./download.js?v=2026-10-30.4").then((m) => m.initDownload()).catch(() => {});
+    import("./download.js?v=2026-10-30.4").then((m) => m.initDownload()).catch((error) => console.error("[Faxton] Download menu failed to initialise:", error));
     if (has("[data-contact-form]") || has("[data-info]")) import("./contact.js?v=2026-10-30.4").then((m) => m.initContact()).catch(() => {});
     if (has("[data-chat-demo]")) import("./feature-demo.js?v=2026-10-30.4").then((m) => m.initFeatureDemo()).catch(() => {});
   } finally {
