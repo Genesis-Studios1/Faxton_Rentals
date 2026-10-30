@@ -123,7 +123,7 @@ function mountPicker(root) {
     setTimeout(() => open(target, { scroll: false }), 250);
   };
   activeOpenDetected = () => { if (root.isConnected && root.closest("[data-download]")) openDetected(); };
-  $("[data-dl-now]", root.closest("[data-download]") || root).forEach((b) => b.addEventListener("click", openDetected));
+  $$("[data-dl-now]", root.closest("[data-download]") || root).forEach((b) => b.addEventListener("click", openDetected));
 }
 
 export function initDownload() {
