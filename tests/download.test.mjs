@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import assert from "node:assert/strict";
 import { PACKAGES, GROUPS, parseRelease, detectGroup, fmtSize, isNewer, loadLatest, releaseUrl } from "../assets/js/download-core.js";
 
-test("Download now attaches its click handler to all matching buttons", () => { const source = readFileSync(new URL("../assets/js/download.js", import.meta.url), "utf8"); assert.match(source, /\\$\\$\\("\\[data-dl-now\\]"/); });
+test("Download now attaches its click handler to all matching buttons", () => { const source = readFileSync(new URL("../assets/js/download.js", import.meta.url), "utf8"); assert.ok(source.includes('$$("[data-dl-now]", root.closest("[data-download]") || root).forEach')); });
 
 const REPO = "musazaneerah4-crypto/Faxton-Rentals-Downloads";
 const dl = (name, size = 5_000_000) => ({ name, size, browser_download_url: `https://github.com/${REPO}/releases/download/v1.2.0/${name}` });
