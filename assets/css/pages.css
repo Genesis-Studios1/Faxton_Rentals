@@ -1101,7 +1101,7 @@ body[data-page="contact"] .icard { min-width:0; }
 body[data-page="about"] .value { padding:20px; }
 body[data-page="billing"] .free li { padding:18px; }
 body[data-page="contact"] .icard { padding:16px; }
-body[data-page="privacy"] .fr-privacy { width:min(100%,780px); margin-inline:auto; }
+body[data-page="privacy"] .fr-privacy { width:min(780px, calc(100% - 2 * var(--gutter))); margin-inline:auto; }
 body[data-page="privacy"] .fr-privacy h2 { text-wrap:pretty; }
 body[data-page="privacy"] .fr-privacy p,
 body[data-page="privacy"] .fr-privacy li { overflow-wrap:anywhere; }
@@ -1160,7 +1160,6 @@ body[data-page="privacy"] .fr-privacy li { overflow-wrap:anywhere; }
   body[data-page="contact"] .info__grid { grid-template-columns:minmax(0,1fr); }
   body[data-page="features"] .frf-hero h1 { font-size:clamp(29px,8vw,36px); }
   body[data-page="features"] .frf-hero .hero__lead { font-size:12px; }
-  body[data-page="privacy"] .fr-privacy { padding-inline:0; }
 }
 
 
