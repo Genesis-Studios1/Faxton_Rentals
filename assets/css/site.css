@@ -468,3 +468,5 @@ a.dlx-opt:hover, button.dlx-opt:hover { background: rgba(255, 255, 255, .12); bo
 @media print {
   .site-header, .m-menu, .skip-link, .fx-toast { display: none !important; }
 }
+
+.dl-modal-card.hot{border-color:rgba(110,231,183,.68);background:rgba(255,255,255,.09)}

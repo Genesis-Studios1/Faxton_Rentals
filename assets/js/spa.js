@@ -32,13 +32,14 @@ function stopProgress() {
   if (progressEl) progressEl.classList.remove("is-active");
 }
 
-async function loadHTML(url) {
+async function loadHTML(url, { fresh = false } = {}) {
   const key = pageKey(url);
-  if (pageCache.has(key)) return pageCache.get(key);
-  if (inFlightPages.has(key)) return inFlightPages.get(key);
+  if (!fresh && pageCache.has(key)) return pageCache.get(key);
+  if (!fresh && inFlightPages.has(key)) return inFlightPages.get(key);
   const request = (async () => {
     const response = await fetch(key, {
       method: "GET",
+      cache: fresh ? "no-cache" : "default",
       credentials: "same-origin",
       headers: { "X-Faxton-Navigation": "1" }
     });
@@ -158,7 +159,7 @@ async function navigate(input, options) {
   activeController = controller;
   startProgress();
   try {
-    const html = await loadHTML(url);
+    const html = await loadHTML(url, { fresh: true });
     if (controller.signal.aborted) return;
     const parsed = new DOMParser().parseFromString(html, "text/html");
     const incoming = {

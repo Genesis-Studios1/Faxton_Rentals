@@ -1,8 +1,7 @@
-// Entry point for the public site. Core modules are re-initialised after SPA page swaps.
-import { initHeader } from "./nav.js?v=2026-10-27.5";
-import { initReveal } from "./reveal.js?v=2026-10-27.5";
-import { initFooter } from "./footer.js?v=2026-10-27.5";
-import { initSpaRouter } from "./spa.js?v=2026-10-27.5";
+import { initHeader } from "./nav.js?v=2026-10-30.2";
+import { initReveal } from "./reveal.js?v=2026-10-30.2";
+import { initFooter } from "./footer.js?v=2026-10-30.2";
+import { initSpaRouter } from "./spa.js?v=2026-10-30.2";
 
 const has = (sel) => document.querySelector(sel);
 let pageBooting = false;
@@ -14,10 +13,10 @@ function bootPage() {
     initHeader();
     initFooter();
     initReveal();
-    if (has("[data-waitlist]")) import("./waitlist.js").then((m) => m.initWaitlist()).catch(() => {});
-    if (has("[data-download]")) import("./download.js?v=2026-10-27.5").then((m) => m.initDownload()).catch(() => {});
-    if (has("[data-contact-form]") || has("[data-info]")) import("./contact.js?v=2026-10-27.5").then((m) => m.initContact()).catch(() => {});
-    if (has("[data-chat-demo]")) import("./feature-demo.js?v=2026-10-27.5").then((m) => m.initFeatureDemo()).catch(() => {});
+    if (has("[data-waitlist]")) import("./waitlist.js?v=2026-10-30.2").then((m) => m.initWaitlist()).catch(() => {});
+    import("./download.js?v=2026-10-30.2").then((m) => m.initDownload()).catch(() => {});
+    if (has("[data-contact-form]") || has("[data-info]")) import("./contact.js?v=2026-10-30.2").then((m) => m.initContact()).catch(() => {});
+    if (has("[data-chat-demo]")) import("./feature-demo.js?v=2026-10-30.2").then((m) => m.initFeatureDemo()).catch(() => {});
   } finally {
     pageBooting = false;
   }

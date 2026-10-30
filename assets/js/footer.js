@@ -23,12 +23,9 @@ export function initFooter() {
 
   $$("[data-choices]").forEach((b) => b.addEventListener("click", openPrivacyChoices));
 
-  // "Get the app": scroll to the download section and open the picker when this page has one
-  $$("a[data-get-app]").forEach((a) => a.addEventListener("click", (e) => {
-    const target = document.getElementById("download");
-    if (!target) return; // normal link to the home page
+  // Open the shared device picker from every page, not only pages with a download section.
+  $("a[data-get-app]").forEach((a) => a.addEventListener("click", (e) => {
     e.preventDefault();
-    target.scrollIntoView({ behavior: "smooth", block: "start" });
     document.dispatchEvent(new CustomEvent("fx:open-download"));
   }));
 }
