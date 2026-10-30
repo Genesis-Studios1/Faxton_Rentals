@@ -220,7 +220,7 @@ export function initSpaRouter() {
     const url = new URL(anchor.href, location.href);
     if (!isLocalPage(url)) return;
     // Load the Features page with a normal document request so visitors always receive the latest HTML.
-    if (url.pathname.replace(/\\/+$/, "") === "/features") return;
+    if (url.pathname.replace(/\/+$/, "") === "/features") return;
     if (url.pathname === location.pathname && url.search === location.search) return;
     event.preventDefault();
     navigate(url, { push: true, smooth: true });
