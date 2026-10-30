@@ -12,7 +12,7 @@ export const PACKAGES = [
   ["windows_arm64", "Faxton-Rentals-Windows-arm64.exe", /win[^/]*arm64[^/]*\.exe$/i],
   ["mac_arm64", "Faxton-Rentals-Mac-arm64.dmg", /mac[^/]*arm64[^/]*\.dmg$/i],
   ["mac_x64", "Faxton-Rentals-Mac-x64.dmg", /mac[^/]*x64[^/]*\.dmg$/i],
-  ["linux_x64", "Faxton-Rentals-Linux-x64.AppImage", /linux[^/]*x64[^/]*\.appimage$/i],
+  ["linux_x64", "Faxton-Rentals-Linux-x64.AppImage", /linux[^/]*(?:x64|x86_64)[^/]*\.appimage$/i],
   ["linux_arm64", "Faxton-Rentals-Linux-arm64.AppImage", /linux[^/]*arm64[^/]*\.appimage$/i],
   ["linux_x64_deb", "Faxton-Rentals-Linux-x64.deb", /linux[^/]*x64[^/]*\.deb$/i],
   ["linux_arm64_deb", "Faxton-Rentals-Linux-arm64.deb", /linux[^/]*arm64[^/]*\.deb$/i],
