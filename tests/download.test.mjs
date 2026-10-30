@@ -72,6 +72,19 @@ test("helpers", () => {
   assert.ok(!isNewer("1.2.0", "1.2.0"));
 });
 
+test("loadLatest falls back to the same-site manifest when GitHub API is unavailable", async () => {
+  const manifestUrl = new URL("../assets/release-manifest.json", import.meta.url).href;
+  const fetchFallback = async (url) => {
+    if (url === releaseUrl(REPO)) return { ok: false, status: 403, json: async () => ({}) };
+    assert.equal(url, manifestUrl);
+    return { ok: true, status: 200, json: async () => release(PACKAGES.map((p) => p[1])) };
+  };
+  const result = await loadLatest({ repo: REPO, fetchImpl: fetchFallback, storage: null, now: 10 });
+  assert.equal(result.state, "ok");
+  assert.equal(result.stale, true);
+  assert.equal(result.release.files.windows_x64.name, "Faxton-Rentals-Windows-x64.exe");
+});
+
 test("loadLatest: ok, cached, stale fallback, none and offline", async () => {
   const mem = new Map();
   const storage = { get: (k) => mem.get(k) ?? null, set: (k, v) => mem.set(k, v) };
