@@ -12,7 +12,7 @@ window.FAXTON_SITE = Object.freeze({
   SITE_URL: "",
 
   // The Faxton Rentals web app (the product). Help centre, privacy, terms and licence pages live there.
-  APP_URL: "https://faxton-rentals.web.app",
+  APP_URL: "https://faxton-rentals.web.app/app",
 
   // Contact details. Empty = a non-clickable placeholder card appears. Only add verified values.
   SUPPORT_EMAIL: "faxtonhomes.support@gmail.com",
@@ -34,7 +34,7 @@ window.FAXTON_SITE = Object.freeze({
   RELEASES_REPO: "musazaneerah4-crypto/Faxton-Rentals-Downloads",
 
   // Shown in the footer.
-  SITE_VERSION: "2026-10-30.2",
+  SITE_VERSION: "2026-10-30.4",
 
   // Waitlist and contact messages are saved in the Faxton Firestore project with the
   // public web key (the same one the app uses; access is controlled by Firestore rules).
