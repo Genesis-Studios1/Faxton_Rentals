@@ -1,7 +1,10 @@
 // Run with: node tests/download.test.mjs   (Node 18+; no packages needed)
 import test from "node:test";
+import { readFileSync } from "node:fs";
 import assert from "node:assert/strict";
 import { PACKAGES, GROUPS, parseRelease, detectGroup, fmtSize, isNewer, loadLatest, releaseUrl } from "../assets/js/download-core.js";
+
+test("Download now attaches its click handler to all matching buttons", () => { const source = readFileSync(new URL("../assets/js/download.js", import.meta.url), "utf8"); assert.match(source, /\\$\\$\\("\\[data-dl-now\\]"/); });
 
 const REPO = "musazaneerah4-crypto/Faxton-Rentals-Downloads";
 const dl = (name, size = 5_000_000) => ({ name, size, browser_download_url: `https://github.com/${REPO}/releases/download/v1.2.0/${name}` });
