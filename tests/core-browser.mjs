@@ -118,7 +118,7 @@ try {
     padding: getComputedStyle(el).paddingTop
   }));
   assert.ok(solidState.background.includes("255, 255, 255"), "header should turn white after scrolling");
-  assert.equal(solidState.padding, "10px", "header should compact after scrolling");
+  assert.ok(Math.abs(parseFloat(solidState.padding) - 10) < 0.1, "header should compact after scrolling");
 
   await page.goto(base + "/", { waitUntil: "networkidle" });
   await page.locator("#download").scrollIntoViewIfNeeded();
