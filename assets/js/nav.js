@@ -1,5 +1,4 @@
-// Header behaviour: stable scroll state and accessible mobile menu.
-// Existing listeners are cleaned up when the SPA swaps the shared header.
+// Header behaviour: reliable scroll state and accessible mobile menu.
 import { $, $$, focusables } from "./ui.js";
 
 let cleanupCurrent = () => {};
@@ -15,31 +14,31 @@ export function initHeader() {
 
   const header = $(".site-header");
   if (!header) return;
+
   const always = header.hasAttribute("data-solid");
-  let ticking = false;
-  const readScrollPosition = () => Math.max(
-    window.scrollY || 0,
-    window.pageYOffset || 0,
-    document.documentElement?.scrollTop || 0,
-    document.body?.scrollTop || 0
-  );
-  const apply = () => {
-    ticking = false;
-    header.classList.toggle("is-solid", always || readScrollPosition() > 8);
+  const readScrollPosition = () => {
+    const root = document.scrollingElement || document.documentElement;
+    return Math.max(
+      window.scrollY || 0,
+      window.pageYOffset || 0,
+      root.scrollTop || 0,
+      document.documentElement.scrollTop || 0,
+      document.body?.scrollTop || 0
+    );
   };
-  const onScroll = () => {
-    if (ticking) return;
-    ticking = true;
-    if ("requestAnimationFrame" in window) window.requestAnimationFrame(apply);
-    else apply();
+  const syncScrollState = () => {
+    header.classList.toggle("is-solid", always || readScrollPosition() > 12);
   };
-  // Listen on both targets: regular document scrolling and nested/browser scroll implementations.
-  apply();
-  listen(window, "scroll", onScroll, { passive: true });
-  listen(document, "scroll", onScroll, { passive: true, capture: true });
-  listen(window, "pageshow", apply);
-  listen(window, "resize", apply, { passive: true });
-  listen(document, "visibilitychange", () => { if (!document.hidden) apply(); });
+
+  // Apply immediately, then keep the fixed header in sync with whichever element scrolls.
+  syncScrollState();
+  listen(window, "scroll", syncScrollState, { passive: true });
+  listen(document, "scroll", syncScrollState, { passive: true, capture: true });
+  listen(window, "pageshow", syncScrollState);
+  listen(window, "resize", syncScrollState, { passive: true });
+  listen(window, "hashchange", syncScrollState);
+  if (window.visualViewport) listen(window.visualViewport, "scroll", syncScrollState, { passive: true });
+  if (typeof window.requestAnimationFrame === "function") window.requestAnimationFrame(syncScrollState);
 
   const btn = $(".menu-btn", header);
   const menu = $("#mobile-menu");
@@ -51,12 +50,13 @@ export function initHeader() {
   const isOpen = () => menu.classList.contains("is-open");
   const open = () => {
     lastFocus = document.activeElement;
+    window.clearTimeout(closeTimer);
     menu.hidden = false;
-    requestAnimationFrame(() => menu.classList.add("is-open"));
+    menu.removeAttribute("inert");
+    window.requestAnimationFrame(() => menu.classList.add("is-open"));
     btn.setAttribute("aria-expanded", "true");
     document.documentElement.classList.add("nav-lock");
     $$("main, footer, .site-header, .skip-link").forEach((el) => el.setAttribute("inert", ""));
-    menu.removeAttribute("inert");
     window.setTimeout(() => closeBtn?.focus(), 30);
   };
   const close = (restore = true) => {
@@ -82,14 +82,20 @@ export function initHeader() {
     if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
     else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
   });
-  const onDocumentKeydown = (event) => { if (event.key === "Escape" && isOpen()) close(); };
-  listen(document, "keydown", onDocumentKeydown);
+  listen(document, "keydown", (event) => { if (event.key === "Escape" && isOpen()) close(); });
   const media = window.matchMedia("(min-width: 1020px)");
   const onMediaChange = (event) => { if (event.matches) close(false); };
-  media.addEventListener?.("change", onMediaChange);
-  if (media.addEventListener) removers.push(() => media.removeEventListener("change", onMediaChange));
+  if (media.addEventListener) {
+    media.addEventListener("change", onMediaChange);
+    removers.push(() => media.removeEventListener("change", onMediaChange));
+  } else if (media.addListener) {
+    media.addListener(onMediaChange);
+    removers.push(() => media.removeListener(onMediaChange));
+  }
+
+  const previousCleanup = cleanupCurrent;
   cleanupCurrent = () => {
     window.clearTimeout(closeTimer);
-    removers.splice(0).forEach((remove) => remove());
+    previousCleanup();
   };
 }
