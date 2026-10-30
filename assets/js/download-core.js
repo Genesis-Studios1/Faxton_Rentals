@@ -92,6 +92,23 @@ export async function loadLatest({ repo, fetchImpl = globalThis.fetch, storage =
     try { storage?.set("fxr.release", JSON.stringify({ t: now, repo, data: release })); } catch { /* storage is optional */ }
     return { state: "ok", release, stale: false };
   } catch {
+    // Use the current release manifest served from this site if GitHub rate-limits the browser.
+    try {
+      const fallbackUrl = new URL("../release-manifest.json", import.meta.url).href;
+      const fallback = await fetchImpl(fallbackUrl, {
+        method: "GET",
+        cache: "no-cache",
+        credentials: "same-origin",
+        headers: { Accept: "application/json" }
+      });
+      if (fallback.ok) {
+        const release = parseRelease(await fallback.json(), repo);
+        if (release) {
+          try { storage?.set("fxr.release", JSON.stringify({ t: now, repo, data: release })); } catch { /* storage is optional */ }
+          return { state: "ok", release, stale: true };
+        }
+      }
+    } catch { /* fall back to the last cached release below */ }
     if (cached) return { state: "ok", release: cached.data, stale: true };
     return { state: "offline", release: null, stale: false };
   } finally {
