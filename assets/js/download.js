@@ -19,6 +19,7 @@ function load(force = false) {
   return loading;
 }
 const listeners = new Set();
+const mountedRoots = new WeakSet();
 let activeOpenDetected = null;
 const notify = () => listeners.forEach((f) => f());
 
@@ -129,12 +130,15 @@ function mountPicker(root) {
 export function initDownload() {
   const roots = $("[data-download]");
   if (!roots.length) { activeOpenDetected = null; return; }
+  const freshRoots = roots.filter((root) => !mountedRoots.has(root));
+  if (!freshRoots.length) return;
+  freshRoots.forEach((root) => mountedRoots.add(root));
   // fetch lazily: when the section gets close to the screen, or right away if it is already near
   const start = () => { if (!loading) load(); };
-  roots.forEach((r) => mountPicker(r));
+  freshRoots.forEach((r) => mountPicker(r));
   if ("IntersectionObserver" in window) {
     const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { start(); io.disconnect(); } }, { rootMargin: "400px 0px" });
-    roots.forEach((r) => io.observe(r));
+    freshRoots.forEach((r) => io.observe(r));
   } else start();
   // #download in the address bar
   if (window.location.hash === "#download") start();
