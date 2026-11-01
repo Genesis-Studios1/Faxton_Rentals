@@ -1,71 +1,99 @@
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    function isOwnerAdmin() {
-      return request.auth != null
-        && request.auth.token.email is string
-        && request.auth.token.email.lower() == "isaacij6yes@gmail.com"
-        && request.auth.token.email_verified == true
-        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
-        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == "admin"
-        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true;
-    }
+const { initializeApp } = require("firebase-admin/app");
+const { onDocumentCreated } = require("firebase-functions/v2/firestore");
+const { defineSecret } = require("firebase-functions/params");
+const logger = require("firebase-functions/logger");
 
-    function validEmail(value) {
-      return value is string
-        && value.size() >= 6 && value.size() <= 120
-        && value.matches("^[^@ ]+@[^@ ]+[.][^@ .]+$");
-    }
+initializeApp();
 
-    function validWaitlist(data) {
-      return data.keys().hasAll(["name", "email", "role", "city", "source", "createdAt"])
-        && data.keys().hasOnly(["name", "email", "role", "city", "source", "createdAt"])
-        && data.name is string && data.name.size() >= 2 && data.name.size() <= 80
-        && validEmail(data.email)
-        && data.role in ["renter", "owner", "agency", "agent"]
-        && data.city is string && data.city.size() >= 2 && data.city.size() <= 60
-        && data.source == "website"
-        && data.createdAt is timestamp
-        && data.createdAt <= request.time
-        && data.createdAt >= request.time - duration.value(10, "minutes");
-    }
+const RESEND_API_KEY = defineSecret("RESEND_API_KEY");
+const RESEND_FROM_EMAIL = defineSecret("RESEND_FROM_EMAIL");
+const ADMIN_EMAIL = defineSecret("ADMIN_EMAIL");
+const DEFAULT_FROM_EMAIL = "Faxton Rentals <onboarding@resend.dev>";
 
-    function validSiteMessage(data) {
-      return data.keys().hasAll(["name", "email", "subject", "message", "source", "createdAt"])
-        && data.keys().hasOnly(["name", "email", "subject", "message", "source", "createdAt"])
-        && data.name is string && data.name.size() >= 2 && data.name.size() <= 80
-        && validEmail(data.email)
-        && data.subject in ["General question", "Support", "List my property", "Press", "Other"]
-        && data.message is string && data.message.size() >= 10 && data.message.size() <= 2000
-        && data.source == "website"
-        && data.createdAt is timestamp
-        && data.createdAt <= request.time
-        && data.createdAt >= request.time - duration.value(10, "minutes");
-    }
-
-    match /admins/{uid} {
-      allow get: if request.auth != null
-        && request.auth.uid == uid
-        && request.auth.token.email is string
-        && request.auth.token.email.lower() == "isaacij6yes@gmail.com"
-        && request.auth.token.email_verified == true;
-      allow list, create, update, delete: if false;
-    }
-
-    match /waitlist/{entryId} {
-      allow create: if validWaitlist(request.resource.data);
-      allow get, list: if isOwnerAdmin();
-      allow update, delete: if false;
-    }
-
-    match /siteMessages/{messageId} {
-      allow create: if validSiteMessage(request.resource.data);
-      allow get, list: if isOwnerAdmin();
-      allow update, delete: if false;
-    }
-
-    match /{document=**} {
-      allow read, write: if false;
-    }
-  }
+function field(data, key) {
+  const value = data && data[key];
+  return typeof value === "string" ? value : "";
 }
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>\"']/g, (c) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  })[c]);
+}
+
+exports.notifyWaitlistSignup = onDocumentCreated(
+  {
+    document: "waitlist/{entryId}",
+    region: "europe-west1",
+    secrets: [RESEND_API_KEY, RESEND_FROM_EMAIL, ADMIN_EMAIL],
+    retry: true,
+  },
+  async (event) => {
+    const data = event.data?.data();
+    if (!data) return;
+
+    const name = field(data, "name");
+    const email = field(data, "email");
+    const role = field(data, "role");
+    const city = field(data, "city");
+    const createdAt = data.createdAt?.toDate
+      ? data.createdAt.toDate().toISOString()
+      : new Date().toISOString();
+
+    const subject = "New Faxton Rentals waitlist signup";
+    const text = [
+      "A new person joined the Faxton Rentals waitlist.",
+      "",
+      `Name: ${name}`,
+      `Email: ${email}`,
+      `Type: ${role}`,
+      `City: ${city}`,
+      `Joined: ${createdAt}`,
+      "",
+      "Open the Faxton Rentals admin dashboard to review signups."
+    ].join("\n");
+
+    const html = `<!doctype html><html><body style="font-family:Arial,sans-serif;color:#17382c">
+      <h2 style="color:#126b4d">New waitlist signup</h2>
+      <p>A new person joined the Faxton Rentals waitlist.</p>
+      <table cellpadding="8" cellspacing="0" style="border-collapse:collapse">
+        <tr><td><b>Name</b></td><td>${escapeHtml(name)}</td></tr>
+        <tr><td><b>Email</b></td><td>${escapeHtml(email)}</td></tr>
+        <tr><td><b>Type</b></td><td>${escapeHtml(role)}</td></tr>
+        <tr><td><b>City</b></td><td>${escapeHtml(city)}</td></tr>
+        <tr><td><b>Joined</b></td><td>${escapeHtml(createdAt)}</td></tr>
+      </table>
+      <p>Review the registration in the Faxton Rentals admin dashboard.</p>
+    </body></html>`;
+
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${RESEND_API_KEY.value()}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: RESEND_FROM_EMAIL.value() || DEFAULT_FROM_EMAIL,
+        to: [ADMIN_EMAIL.value()],
+        subject,
+        text,
+        html,
+      }),
+    });
+
+    if (!response.ok) {
+      const detail = await response.text().catch(() => "");
+      logger.error("Waitlist notification email failed", {
+        status: response.status,
+        detail: detail.slice(0, 500),
+        entryId: event.params.entryId,
+      });
+      throw new Error(`Email provider returned HTTP ${response.status}`);
+    }
+
+    logger.info("Waitlist notification email sent", {
+      entryId: event.params.entryId,
+      recipient: ADMIN_EMAIL.value(),
+    });
+  }
+);
