@@ -3,8 +3,6 @@ service cloud.firestore {
   match /databases/{database}/documents {
     function isOwnerAdmin() {
       return request.auth != null
-        && request.auth.token.email is string
-        && request.auth.token.email.lower() == "isaacij6yes@gmail.com"
         && request.auth.token.email_verified == true
         && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
         && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == "admin"
@@ -44,10 +42,10 @@ service cloud.firestore {
     }
 
     match /admins/{uid} {
+      // Admin membership is provisioned out-of-band by a trusted administrator.
+      // A user may read only their own admin record; clients cannot mutate this collection.
       allow get: if request.auth != null
         && request.auth.uid == uid
-        && request.auth.token.email is string
-        && request.auth.token.email.lower() == "isaacij6yes@gmail.com"
         && request.auth.token.email_verified == true;
       allow list, create, update, delete: if false;
     }

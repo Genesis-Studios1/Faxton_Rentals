@@ -7,8 +7,7 @@ initializeApp();
 
 const RESEND_API_KEY = defineSecret("RESEND_API_KEY");
 const RESEND_FROM_EMAIL = defineSecret("RESEND_FROM_EMAIL");
-const ADMIN_EMAIL = "isaacij6yes@gmail.com";
-const DEFAULT_FROM_EMAIL = "Faxton Rentals <onboarding@resend.dev>";
+const WAITLIST_ADMIN_EMAIL = defineSecret("WAITLIST_ADMIN_EMAIL");
 
 function field(data, key) {
   const value = data && data[key];
@@ -25,7 +24,7 @@ exports.notifyWaitlistSignup = onDocumentCreated(
   {
     document: "waitlist/{entryId}",
     region: "europe-west1",
-    secrets: [RESEND_API_KEY, RESEND_FROM_EMAIL],
+    secrets: [RESEND_API_KEY, RESEND_FROM_EMAIL, WAITLIST_ADMIN_EMAIL],
     retry: true,
   },
   async (event) => {
@@ -73,8 +72,8 @@ exports.notifyWaitlistSignup = onDocumentCreated(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: RESEND_FROM_EMAIL.value() || DEFAULT_FROM_EMAIL,
-        to: [ADMIN_EMAIL],
+        from: RESEND_FROM_EMAIL.value(),
+        to: [WAITLIST_ADMIN_EMAIL.value()],
         subject,
         text,
         html,
@@ -93,7 +92,6 @@ exports.notifyWaitlistSignup = onDocumentCreated(
 
     logger.info("Waitlist notification email sent", {
       entryId: event.params.entryId,
-      recipient: ADMIN_EMAIL,
     });
   }
 );
