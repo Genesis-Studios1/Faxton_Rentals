@@ -205,7 +205,31 @@ try {
   );
   assert.equal(fallbackLinks.length, 2, "manifest fallback should keep Windows downloads available");
   await fallbackContext.close();
-  process.stdout.write("PASS: navbar scroll state, device picker, footer entry point, and release fallback\n");
+
+  // Mobile layout regressions: the privacy text must keep a readable side gutter,
+  // and the Features page must not introduce horizontal page overflow.
+  const mobileContext = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, deviceScaleFactor: 1 });
+  const mobilePage = await mobileContext.newPage();
+  await mobilePage.goto(base + "/privacy/", { waitUntil: "networkidle" });
+  const privacyLayout = await mobilePage.locator(".fr-privacy").evaluate((el) => {
+    const rect = el.getBoundingClientRect();
+    return { left: rect.left, right: window.innerWidth - rect.right, width: rect.width,
+      stylesheet: [...document.styleSheets].map((s) => s.href || "").find((href) => href.includes("pages.css")) };
+  });
+  assert.ok(privacyLayout.left >= 12 && privacyLayout.right >= 12,
+    "Privacy Policy should keep visible side margins on mobile: " + JSON.stringify(privacyLayout));
+  assert.ok(privacyLayout.stylesheet?.includes("2026-11-03.1"),
+    "Privacy Policy should load the refreshed stylesheet instead of a cached older version");
+  await mobilePage.goto(base + "/features/", { waitUntil: "networkidle" });
+  const featureLayout = await mobilePage.evaluate(() => ({
+    viewport: window.innerWidth,
+    document: document.documentElement.scrollWidth,
+    heading: document.querySelector(".frf-hero h1")?.getBoundingClientRect().width
+  }));
+  assert.ok(featureLayout.document <= featureLayout.viewport + 1,
+    "Features page should not overflow horizontally on mobile: " + JSON.stringify(featureLayout));
+  await mobileContext.close();
+  process.stdout.write("PASS: navbar scroll state, device picker, footer entry point, release fallback, and mobile layouts\\n");
 } finally {
   await browser.close();
   await new Promise((resolveClose, reject) => server.close((error) => error ? reject(error) : resolveClose()));
