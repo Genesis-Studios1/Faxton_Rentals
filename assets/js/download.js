@@ -38,8 +38,7 @@ document.addEventListener("fx:pagewillchange", () => { listeners.clear(); active
 document.addEventListener("fx:open-download", () => {
   if (activeOpenDetected) { activeOpenDetected(); return; }
   const root = document.body.dataset.root || "";
-  // The shared download picker lives on the About page; the homepage has no download section.
-  const target = new URL(root + "about/#download", window.location.href);
+  const target = new URL(root + "#download", window.location.href);
   if (target.pathname === window.location.pathname) {
     const section = document.getElementById("download");
     if (section) section.scrollIntoView({ behavior: "smooth", block: "start" });
