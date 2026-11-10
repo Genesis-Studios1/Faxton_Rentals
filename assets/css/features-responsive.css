@@ -528,3 +528,57 @@ body[data-page="features"] .frf-platform-all:focus-visible{outline:3px solid #34
     margin-inline: 0;
   }
 }
+
+
+/* Centre the messaging phone on the page while keeping the copy's wider left gutter. */
+@media (min-width: 801px) {
+  body[data-page="features"] .frf-message-grid {
+    width: 100%;
+    margin: 0;
+    grid-template-columns: minmax(0, 1fr) 238px minmax(0, 1fr);
+    column-gap: clamp(22px, 3.4vw, 48px);
+  }
+  body[data-page="features"] .frf-message .frf-copy {
+    padding-left: clamp(110px, 16vw, 190px);
+  }
+  body[data-page="features"] .frf-device--chat {
+    grid-column: 2;
+    justify-self: center;
+    width: 100%;
+  }
+  body[data-page="features"] .frf-device--chat .frf-phone {
+    margin-inline: auto;
+  }
+}
+
+@media (max-width: 800px) {
+  body[data-page="features"] .frf-message-grid {
+    width: 100%;
+    margin: 0;
+  }
+  body[data-page="features"] .frf-message .frf-copy {
+    padding-left: 0;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 800px) {
+  body[data-page="features"] .frf-message-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  body[data-page="features"] .frf-device--chat {
+    grid-column: 1;
+    justify-self: center;
+    width: min(100%, 300px);
+  }
+}
+
+@media (max-width: 640px) {
+  body[data-page="features"] .frf-message-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  body[data-page="features"] .frf-device--chat {
+    grid-column: 1;
+    justify-self: center;
+    width: min(100%, 300px);
+  }
+}
