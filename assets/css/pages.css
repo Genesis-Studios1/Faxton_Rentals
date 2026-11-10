@@ -1602,3 +1602,19 @@ body[data-page="home"] .pcard p {
     transform: none;
   }
 }
+
+
+/* Keep the feature icons optically centred beside their headings. */
+body[data-page="features"] .frf-tag {
+  align-items: center;
+}
+body[data-page="features"] .frf-icon {
+  display: grid;
+  place-items: center;
+}
+body[data-page="features"] .frf-icon .ic {
+  display: block;
+  width: 26px;
+  height: 26px;
+  margin: 0;
+}

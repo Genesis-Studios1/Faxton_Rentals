@@ -504,3 +504,27 @@ body[data-page="features"] .frf-platform-all:focus-visible{outline:3px solid #34
   body[data-page="features"] .frf-platform-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:11px}
   body[data-page="features"] .frf-platform-card{min-height:138px}
 }
+
+/* Give the messaging feature a substantially wider left gutter on desktop. */
+@media (min-width: 901px) {
+  body[data-page="features"] .frf-message-grid {
+    width: calc(100% - clamp(110px, 16vw, 190px));
+    margin-left: clamp(110px, 16vw, 190px);
+    margin-right: 0;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 900px) {
+  body[data-page="features"] .frf-message-grid {
+    width: calc(100% - 72px);
+    margin-left: 72px;
+    margin-right: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  body[data-page="features"] .frf-message-grid {
+    width: 100%;
+    margin-inline: 0;
+  }
+}
