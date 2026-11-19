@@ -14,6 +14,8 @@
 .pcard__img { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: var(--tint-2); }
 .pcard__img img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); }
 .pcard:hover .pcard__img img { transform: scale(1.05); }
+/* Avoid enlarging already-cropped homepage property photos on hover. */
+body[data-page="home"] .pcard:hover .pcard__img img { transform: none; }
 .chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 999px; background: var(--forest); color: #fff; font: 600 13px/1 var(--font-body); }
 .pcard .chip { position: absolute; left: 14px; top: 14px; box-shadow: 0 8px 20px -10px rgba(0, 0, 0, .6); }
 .pcard__body { display: flex; flex-direction: column; flex: 1; padding: 22px 24px 20px; }
