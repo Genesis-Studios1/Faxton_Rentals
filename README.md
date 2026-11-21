@@ -117,6 +117,16 @@ safe pattern fallback), and show "Not available yet" for anything that is not in
 * `assets/logo/`: the FR mark and the wordmark lockup as SVG, in white, mint and brand green. `assets/icons/`: favicons and app icons from the app.
 * `assets/og-image.jpg`: 1200 x 630 share card (hero photo + logo + headline).
 
+## Property photo credits
+
+The property photographs below are served from Unsplash at responsive sizes. The image URLs use the Unsplash image CDN; the source pages identify each photo as free to use under the Unsplash License.
+
+- Homepage hero — [Alef Morais, modern house with wooden facade and stone accents](https://unsplash.com/photos/modern-house-with-wooden-facade-and-stone-accents-emnfe1YR6io).
+- Homepage living-room card — [Clay Banks, modern living room with stylish furniture and large windows](https://unsplash.com/photos/modern-living-room-with-stylish-furniture-and-large-windows-FL-ZcDK8tMo).
+- Homepage detached-home card — [GoodLifeConstruction, modern garage doors on a white house](https://unsplash.com/photos/modern-garage-doors-on-a-white-house-3qRx6B4cT6g).
+- Homepage apartment card — [Aalo Lens, modern apartment building with balconies and greenery](https://unsplash.com/photos/modern-apartment-building-with-balconies-and-greenery-_wHXtrp4C0g).
+- Additional page photography — [Thomas Kinto](https://unsplash.com/photos/modern-apartment-building-exterior-against-blue-sky-CdcqnAuTG2U), [Monaz Hastam](https://unsplash.com/photos/modern-living-room-with-dining-area-V8mu0tk85VQ), [Raphael](https://unsplash.com/photos/modern-living-room-with-sofa-and-chairs-uJcEc76dzH8), [WE DO Interior Design & Fit Out](https://unsplash.com/photos/modern-living-room-with-cream-sofa-NgShhOAGCjM), and [Franco Debartolo](https://unsplash.com/photos/a-bright-modern-living-room-with-a-sofa-and-armchair-S5VtKjf4tcM).
+
 ## Still to be supplied by the owner
 
 Support email, phone, WhatsApp, office address, social page addresses, the production domain, and the pricing for owners, agencies and agents
