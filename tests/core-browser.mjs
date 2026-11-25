@@ -199,12 +199,17 @@ try {
     page: document.body.dataset.page,
     stylesheet: [...document.styleSheets].some((sheet) => sheet.href?.includes("waitlist-renter.css")),
     headerDisplay: getComputedStyle(section.querySelector(".wl__head")).display,
-    formColumns: getComputedStyle(section.querySelector(".wl__form")).gridTemplateColumns.split(" ").length
+    formDisplay: getComputedStyle(section.querySelector(".wl__form")).display,
+    fieldTops: [...section.querySelectorAll(".wl__form > .field")].map((field) => Math.round(field.getBoundingClientRect().top)),
+    submitTop: Math.round(section.querySelector('.wl__form button[type="submit"]').getBoundingClientRect().top)
   }));
   assert.equal(waitlistLayout.page, "home", "Features waitlist CTA should load the homepage");
   assert.equal(waitlistLayout.stylesheet, true, "homepage waitlist stylesheet should be available after SPA navigation");
   assert.equal(waitlistLayout.headerDisplay, "grid", "homepage waitlist heading should retain its original grid layout");
-  assert.equal(waitlistLayout.formColumns, 4, "homepage waitlist form should retain its original four-column layout");
+  assert.equal(waitlistLayout.formDisplay, "grid", "homepage waitlist form should retain its grid layout");
+  assert.equal(new Set(waitlistLayout.fieldTops).size, 1, "the four waitlist fields should align on one desktop row");
+  assert.ok(waitlistLayout.submitTop > waitlistLayout.fieldTops[0] + 30,
+    "the waitlist submit button should remain on its own row, as in the original design");
   await page.goto(base + "/contact/", { waitUntil: "networkidle" });
   await page.locator("a[data-get-app]").click();
   await page.waitForURL((url) => url.pathname === "/" && url.hash === "#download");
