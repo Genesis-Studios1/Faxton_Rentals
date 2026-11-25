@@ -45,7 +45,7 @@ function bootPage() {
     safely("header", initHeader);
     safely("footer", initFooter);
     safely("reveal animations", initReveal);
-    if (has("[data-waitlist]")) import("./waitlist.js?v=2026-10-30.4").then((m) => m.initWaitlist()).catch((error) => console.error("[Faxton] waitlist could not initialise:", error));
+    if (has("[data-waitlist]")) import("./waitlist.js?v=2026-11-25.2").then((m) => m.initWaitlist()).catch((error) => console.error("[Faxton] waitlist could not initialise:", error));
     if (has("[data-contact-form]") || has("[data-info]")) import("./contact.js?v=2026-10-30.4").then((m) => m.initContact()).catch((error) => console.error("[Faxton] contact form could not initialise:", error));
     if (has("[data-chat-demo]")) import("./feature-demo.js?v=2026-10-30.4").then((m) => m.initFeatureDemo()).catch((error) => console.error("[Faxton] feature demo could not initialise:", error));
   } finally {
