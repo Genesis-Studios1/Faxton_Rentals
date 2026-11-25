@@ -99,7 +99,7 @@ loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const button = $('button[type="submit"]', loginForm), label = $("span", button);
   button.disabled = true; label.textContent = "Checking access…"; message(loginStatus, "");
-  try { await signIn($("#email").value.trim(), $("#password").value); showDashboard(); await loadRecords(); }
+  try { await signIn($("#email").value.trim(), $("#password").value); $("#password").value = ""; showDashboard(); await loadRecords(); }
   catch (err) { message(loginStatus, err.message || "Sign-in failed.", true); }
   finally { button.disabled = false; label.textContent = "Sign in securely"; }
 });
