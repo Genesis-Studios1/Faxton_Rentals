@@ -39,10 +39,7 @@ jobs:
 
       - name: Check JavaScript syntax and Firebase file integrity
         run: |
-          node --check admin/waitlist/admin.js
-          node --check functions/index.js
-          node --check assets/js/main.js
-          node --check assets/js/spa.js
+          find assets/js admin/waitlist functions tools tests -type f \\( -name '*.js' -o -name '*.mjs' \\) -print0 | xargs -0 -n1 node --check
           node tools/check-project-structure.mjs
 
       - name: Check the code, browser behaviours and links
