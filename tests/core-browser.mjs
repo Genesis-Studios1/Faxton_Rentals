@@ -270,6 +270,19 @@ try {
   }));
   assert.ok(featureLayout.document <= featureLayout.viewport + 1,
     "Features page should not overflow horizontally on mobile: " + JSON.stringify(featureLayout));
+  await mobilePage.locator('.site-header a[data-spa-waitlist]').click();
+  await mobilePage.waitForURL((url) => url.pathname === "/" && url.hash === "#waitlist");
+  const mobileWaitlist = await mobilePage.locator("#waitlist").evaluate((section) => ({
+    stylesheet: [...document.styleSheets].some((sheet) => sheet.href?.includes("waitlist-renter.css")),
+    formDisplay: getComputedStyle(section.querySelector(".wl__form")).display,
+    fieldTops: [...section.querySelectorAll(".wl__form > .field")].map((field) => Math.round(field.getBoundingClientRect().top)),
+    submitTop: Math.round(section.querySelector('.wl__form button[type="submit"]').getBoundingClientRect().top)
+  }));
+  assert.equal(mobileWaitlist.stylesheet, true, "mobile Features CTA should load the homepage waitlist stylesheet");
+  assert.equal(mobileWaitlist.formDisplay, "grid", "mobile waitlist should retain its grid layout");
+  assert.equal(new Set(mobileWaitlist.fieldTops).size, 4, "mobile waitlist fields should stack vertically");
+  assert.ok(mobileWaitlist.submitTop > mobileWaitlist.fieldTops[3],
+    "mobile waitlist submit button should follow all fields");
   await mobileContext.close();
   process.stdout.write("PASS: navbar scroll state, device picker, footer entry point, release fallback, and mobile layouts\\n");
 } finally {
