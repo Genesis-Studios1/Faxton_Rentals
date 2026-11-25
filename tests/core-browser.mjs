@@ -197,7 +197,13 @@ try {
     formDisplay: getComputedStyle(section.querySelector(".wl__form")).display,
     fields: [...section.querySelectorAll(".wl__form > .field")].map((field) => {
       const rect = field.getBoundingClientRect();
-      return { top: Math.round(rect.top), bottom: Math.round(rect.bottom) };
+      const control = field.querySelector("input, select, textarea");
+      const controlRect = control?.getBoundingClientRect();
+      return {
+        top: Math.round(rect.top),
+        bottom: Math.round(rect.bottom),
+        controlTop: controlRect ? Math.round(controlRect.top) : null
+      };
     }),
     submit: (() => {
       const button = section.querySelector("[data-wl-app-link]");
@@ -213,7 +219,7 @@ try {
   assert.equal(waitlistLayout.fields.length, 1, "the signup handoff should only ask for the account role");
   assert.equal(waitlistLayout.submit.gridColumnStart, "auto", "the app signup link should sit beside the role selector");
   assert.equal(waitlistLayout.submit.gridColumnEnd, "auto", "the app signup link should not span a separate form row");
-  assert.equal(waitlistLayout.submit.top, waitlistLayout.fields[0].top, "the app signup link should align with the role selector");
+  assert.equal(waitlistLayout.submit.top, waitlistLayout.fields[0].controlTop, "the app signup link should align with the role selector control, below its label");
   await page.goto(base + "/contact/", { waitUntil: "networkidle" });
   await page.locator("a[data-get-app]").click();
   await page.waitForURL((url) => url.pathname === "/" && url.hash === "#download");
