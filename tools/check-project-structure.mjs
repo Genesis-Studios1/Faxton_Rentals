@@ -1,0 +1,31 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+
+const admin = readFileSync("admin/waitlist/admin.js", "utf8");
+const rules = readFileSync("firestore.rules", "utf8");
+const fn = readFileSync("functions/index.js", "utf8");
+const firebase = JSON.parse(readFileSync("firebase.json", "utf8"));
+const adminHtml = readFileSync("admin/waitlist/index.html", "utf8");
+const waitlist = readFileSync("assets/js/waitlist.js", "utf8");
+
+assert.match(admin, /^import\s+\{\s*CONFIG\s*\}/, "admin dashboard entry must be JavaScript");
+assert.match(waitlist, /data-wl-app-link/, "website signup must link into the Faxton app");
+assert.match(waitlist, /renter: "renter"/, "website signup must preserve the renter role");
+assert.match(waitlist, /owner: "landlord"/, "website homeowner signup must map to the app landlord role");
+assert.match(waitlist, /agency: "agency"/, "website business signup must preserve the agency role");
+assert.match(waitlist, /agent: "agent"/, "website agent signup must preserve the agent role");
+assert.doesNotMatch(waitlist, /addDoc|\.collection\(|firestore\.googleapis\.com/, "website signup must not attempt blocked public Firestore writes");
+assert.match(admin, /value = "\'" \+ value/, "CSV exports must neutralise spreadsheet formulas");
+assert.ok(admin.includes("securetoken.googleapis.com/v1/token"), "admin dashboard must refresh expired Firebase ID tokens");
+assert.ok(admin.includes('$("#password").value = ""'), "admin password field must be cleared after sign-in");
+assert.doesNotMatch(admin, /rules_version\s*=|service cloud\.firestore/, "Firestore rules must not be stored as admin JavaScript");
+assert.match(rules, /^rules_version\s*=\s*['"]2['"];\s*service cloud\.firestore/, "firestore.rules must contain Firestore rules");
+assert.match(rules, /function isAdminSignedIn\(\)/, "Firestore rules must enforce admin authorization");
+assert.match(rules, /allow get, list: if isAdminSignedIn\(\)/, "waitlist and messages must be admin-only");
+assert.match(fn, /exports\.notifyWaitlistSignup\s*=\s*onDocumentCreated/, "Cloud Function entry must export the waitlist notification trigger");
+assert.match(fn, /defineSecret\(["']ADMIN_EMAIL["']\)/, "notification recipient must come from a server-side secret");
+assert.doesNotMatch(fn, /^#\s/m, "functions/index.js must not contain Markdown documentation");
+assert.equal(firebase.firestore?.rules, "firestore.rules", "Firebase must deploy the checked rules file");
+assert.equal(firebase.functions?.[0]?.source, "functions", "Firebase must deploy the checked functions directory");
+assert.match(adminHtml, /type="module"\s+src="admin\.js"/, "admin page must load its JavaScript module");
+console.log("PASS: admin script, Firestore rules, Cloud Function and Firebase deployment files are in their correct locations.");

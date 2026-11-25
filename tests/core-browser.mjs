@@ -72,22 +72,10 @@ try {
       body: JSON.stringify(release)
     })
   );
+  const firestoreRequests = [];
   await context.route("https://firestore.googleapis.com/**", async (route) => {
-    const request = route.request();
-    const origin = request.headers().origin || "*";
-    const headers = {
-      "access-control-allow-origin": origin,
-      "access-control-allow-methods": "POST, OPTIONS",
-      "access-control-allow-headers": "content-type",
-      "access-control-max-age": "600"
-    };
-    if (request.method() === "OPTIONS") return route.fulfill({ status: 204, headers });
-    assert.equal(request.method(), "POST", "waitlist should use a POST request");
-    const body = JSON.parse(request.postData() || "{}");
-    assert.deepEqual(Object.keys(body.fields || {}).sort(), ["city", "createdAt", "email", "name", "role", "source"]);
-    assert.equal(body.fields.source.stringValue, "website");
-    assert.equal(body.fields.email.stringValue, "qa.visitor@example.com");
-    return route.fulfill({ status: 200, contentType: "application/json", headers, body: JSON.stringify({ name: "projects/faxton-rentals/databases/(default)/documents/waitlist/test" }) });
+    firestoreRequests.push({ url: route.request().url(), method: route.request().method() });
+    return route.abort();
   });
   const page = await context.newPage();
   const errors = [];
@@ -145,6 +133,17 @@ try {
   assert.equal(logoColors.wordmark, "rgb(18, 74, 56)", "the second logo colour should return to dark green after scrolling");
 
   await page.goto(base + "/", { waitUntil: "networkidle" });
+  // Homepage header CTA should scroll to the waitlist and leave the form clear of the fixed header.
+  await page.locator('.site-header a[data-spa-waitlist]').click();
+  await page.waitForFunction(() => location.hash === "#waitlist");
+  await page.waitForFunction(() => {
+    const section = document.querySelector("#waitlist");
+    const top = section?.getBoundingClientRect().top ?? -999;
+    return top >= 0 && top < 160;
+  });
+  await page.waitForFunction(() => document.activeElement?.id === "wl-role");
+  assert.equal(await page.locator("#wl-role").evaluate((el) => el === document.activeElement), true,
+    "homepage signup CTA should focus the account-role selector");
   await page.locator("#download").scrollIntoViewIfNeeded();
   await page.locator('.dlx-card[data-g="windows"] .dlx-head').click();
   await page.waitForSelector('.dlx-sheet a.dlx-opt[href]');
@@ -163,24 +162,71 @@ try {
     "Download now should open the detected Windows picker");
   await page.locator(".dlx-sheet .dlx-x").click();
 
-  // The public waitlist form must submit the expected Firestore document and show confirmation.
-  await page.locator("#wl-name").fill("QA Visitor");
-  await page.locator("#wl-email").fill("qa.visitor@example.com");
+  // Website signup must hand off to the real app instead of attempting an anonymous Firestore write.
+  await page.locator("#wl-role").selectOption("owner");
+  assert.equal(await page.locator("[data-wl-app-link]").getAttribute("href"),
+    "https://faxton-rentals.web.app/app/#/signup?role=landlord",
+    "home-owner signup should open the app with its internal landlord role");
+  await page.locator("#wl-role").selectOption("agency");
+  assert.equal(await page.locator("[data-wl-app-link]").getAttribute("href"),
+    "https://faxton-rentals.web.app/app/#/signup?role=agency",
+    "business signup should preserve the agency role");
+  await page.locator("#wl-role").selectOption("agent");
+  assert.equal(await page.locator("[data-wl-app-link]").getAttribute("href"),
+    "https://faxton-rentals.web.app/app/#/signup?role=agent",
+    "agent signup should preserve the agent role");
   await page.locator("#wl-role").selectOption("renter");
-  await page.locator("#wl-city").fill("Lagos");
-  await page.locator("[data-wl-form] button[type=submit]").click();
-  await page.waitForFunction(() => {
-    const done = document.querySelector("[data-wl-done]");
-    return done && !done.hidden;
-  });
+  assert.equal(await page.locator("[data-wl-app-link]").getAttribute("href"),
+    "https://faxton-rentals.web.app/app/#/signup?role=renter",
+    "renter signup should open the app signup route");
 
   // The footer action on a page without a download section should navigate home and open the picker.
+  await page.goto(base + "/contact/", { waitUntil: "networkidle" });
+  // The fixed header CTA on inner pages should return to the homepage waitlist.
+  await page.locator('.site-header a[data-spa-waitlist]').click();
+  await page.waitForURL((url) => url.pathname === "/" && url.hash === "#waitlist");
+  await page.waitForSelector("#wl-role");
+  // Features-to-home SPA navigation must retain the homepage's dedicated waitlist layout.
+  await page.goto(base + "/features/", { waitUntil: "networkidle" });
+  await page.locator('.site-header a[data-spa-waitlist]').click();
+  await page.waitForURL((url) => url.pathname === "/" && url.hash === "#waitlist");
+  const waitlistLayout = await page.locator("#waitlist").evaluate((section) => ({
+    page: document.body.dataset.page,
+    stylesheet: [...document.styleSheets].some((sheet) => sheet.href?.includes("waitlist-renter.css")),
+    headerDisplay: getComputedStyle(section.querySelector(".wl__head")).display,
+    formDisplay: getComputedStyle(section.querySelector(".wl__form")).display,
+    fields: [...section.querySelectorAll(".wl__form > .field")].map((field) => {
+      const rect = field.getBoundingClientRect();
+      const control = field.querySelector("input, select, textarea");
+      const controlRect = control?.getBoundingClientRect();
+      return {
+        top: Math.round(rect.top),
+        bottom: Math.round(rect.bottom),
+        controlTop: controlRect ? Math.round(controlRect.top) : null
+      };
+    }),
+    submit: (() => {
+      const button = section.querySelector("[data-wl-app-link]");
+      const rect = button.getBoundingClientRect();
+      const style = getComputedStyle(button);
+      return { top: Math.round(rect.top), gridColumnStart: style.gridColumnStart, gridColumnEnd: style.gridColumnEnd };
+    })()
+  }));
+  assert.equal(waitlistLayout.page, "home", "Features waitlist CTA should load the homepage");
+  assert.equal(waitlistLayout.stylesheet, true, "homepage waitlist stylesheet should be available after SPA navigation");
+  assert.equal(waitlistLayout.headerDisplay, "grid", "homepage waitlist heading should retain its original grid layout");
+  assert.equal(waitlistLayout.formDisplay, "grid", "homepage waitlist form should retain its grid layout");
+  assert.equal(waitlistLayout.fields.length, 1, "the signup handoff should only ask for the account role");
+  assert.equal(waitlistLayout.submit.gridColumnStart, "auto", "the app signup link should sit beside the role selector");
+  assert.equal(waitlistLayout.submit.gridColumnEnd, "auto", "the app signup link should not span a separate form row");
+  assert.equal(waitlistLayout.submit.top, waitlistLayout.fields[0].controlTop, "the app signup link should align with the role selector control, below its label");
   await page.goto(base + "/contact/", { waitUntil: "networkidle" });
   await page.locator("a[data-get-app]").click();
   await page.waitForURL((url) => url.pathname === "/" && url.hash === "#download");
   await page.waitForSelector(".dlx-sheet");
   assert.equal(await page.$eval(".dlx-card.open", (el) => el.dataset.g), "windows",
     "footer Get the app action should open the detected device picker");
+  assert.deepEqual(firestoreRequests, [], "marketing signup must not attempt blocked anonymous Firestore writes");
   assert.deepEqual(errors, [], "normal download flow should not produce browser JavaScript errors");
   await context.close();
 
@@ -218,8 +264,15 @@ try {
   });
   assert.ok(privacyLayout.left >= 12 && privacyLayout.right >= 12,
     "Privacy Policy should keep visible side margins on mobile: " + JSON.stringify(privacyLayout));
-  assert.ok(privacyLayout.stylesheet?.includes("2026-11-03.1"),
+  assert.ok(privacyLayout.stylesheet?.includes("2026-11-25.2"),
     "Privacy Policy should load the refreshed stylesheet instead of a cached older version");
+  await mobilePage.goto(base + "/", { waitUntil: "networkidle" });
+  await mobilePage.locator(".menu-btn").click();
+  await mobilePage.locator('#mobile-menu a[data-spa-waitlist]').click();
+  await mobilePage.waitForFunction(() => location.hash === "#waitlist");
+  await mobilePage.waitForSelector("#wl-role");
+  assert.equal(await mobilePage.locator("#wl-role").isVisible(), true,
+    "mobile menu signup action should reveal the app handoff");
   await mobilePage.goto(base + "/features/", { waitUntil: "networkidle" });
   const featureLayout = await mobilePage.evaluate(() => ({
     viewport: window.innerWidth,
@@ -228,6 +281,20 @@ try {
   }));
   assert.ok(featureLayout.document <= featureLayout.viewport + 1,
     "Features page should not overflow horizontally on mobile: " + JSON.stringify(featureLayout));
+  await mobilePage.locator('.menu-btn').click();
+  await mobilePage.locator('#mobile-menu a[data-spa-waitlist]').click();
+  await mobilePage.waitForURL((url) => url.pathname === "/" && url.hash === "#waitlist");
+  const mobileWaitlist = await mobilePage.locator("#waitlist").evaluate((section) => ({
+    stylesheet: [...document.styleSheets].some((sheet) => sheet.href?.includes("waitlist-renter.css")),
+    formDisplay: getComputedStyle(section.querySelector(".wl__form")).display,
+    fieldTops: [...section.querySelectorAll(".wl__form > .field")].map((field) => Math.round(field.getBoundingClientRect().top)),
+    submitTop: Math.round(section.querySelector("[data-wl-app-link]").getBoundingClientRect().top)
+  }));
+  assert.equal(mobileWaitlist.stylesheet, true, "mobile Features CTA should load the homepage waitlist stylesheet");
+  assert.equal(mobileWaitlist.formDisplay, "grid", "mobile waitlist should retain its grid layout");
+  assert.equal(mobileWaitlist.fieldTops.length, 1, "mobile signup handoff should only show the role selector");
+  assert.ok(mobileWaitlist.submitTop > mobileWaitlist.fieldTops[0],
+    "mobile app signup link should follow the role selector");
   await mobileContext.close();
   process.stdout.write("PASS: navbar scroll state, device picker, footer entry point, release fallback, and mobile layouts\\n");
 } finally {

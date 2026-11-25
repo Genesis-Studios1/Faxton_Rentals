@@ -1,5 +1,6 @@
 /* Renter-first waitlist refresh — preserves Faxton Rentals' forest-green palette and existing form behaviour. */
 body[data-page="home"] .wl {
+  scroll-margin-top: 104px;
   margin-top: -176px;
   padding-bottom: clamp(44px, 6vw, 84px);
 }
@@ -67,6 +68,7 @@ body[data-page="home"] .wl__sub {
   line-height: 1.7;
 }
 body[data-page="home"] .wl__form {
+  display: grid;
   position: relative;
   z-index: 1;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(140px, .7fr) auto;
@@ -98,6 +100,9 @@ body[data-page="home"] .wl__form .field select:focus {
   box-shadow: 0 0 0 4px rgba(35,132,91,.13);
 }
 body[data-page="home"] .wl__form .btn {
+  grid-column: 1 / -1;
+  justify-self: start;
+  width: min(404px, 100%);
   min-height: 54px;
   margin: 0;
   padding: 0 22px;
@@ -136,4 +141,22 @@ body[data-page="home"] .wl__done { position: relative; z-index: 1; }
 @media (prefers-reduced-motion: reduce) {
   body[data-page="home"] .wl__form .field input,
   body[data-page="home"] .wl__form .field select { transition: none; }
+}
+
+
+/* The website now hands registration to the Faxton app; only the account role is chosen here. */
+body[data-page="home"] .wl__signup-form {
+  grid-template-columns: minmax(0, 300px) minmax(220px, 404px);
+  align-items: end;
+}
+body[data-page="home"] .wl__signup-form .btn {
+  grid-column: auto;
+  justify-self: stretch;
+  width: 100%;
+}
+@media (max-width: 900px) {
+  body[data-page="home"] .wl__signup-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  body[data-page="home"] .wl__signup-form { grid-template-columns: minmax(0, 1fr); }
 }
