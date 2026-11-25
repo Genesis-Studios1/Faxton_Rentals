@@ -263,7 +263,7 @@ try {
   });
   assert.ok(privacyLayout.left >= 12 && privacyLayout.right >= 12,
     "Privacy Policy should keep visible side margins on mobile: " + JSON.stringify(privacyLayout));
-  assert.ok(privacyLayout.stylesheet?.includes("2026-11-03.1"),
+  assert.ok(privacyLayout.stylesheet?.includes("2026-11-25.2"),
     "Privacy Policy should load the refreshed stylesheet instead of a cached older version");
   await mobilePage.goto(base + "/", { waitUntil: "networkidle" });
   await mobilePage.locator(".menu-btn").click();
