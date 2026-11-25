@@ -55,7 +55,7 @@ No SDK is loaded.
 * **Contact form**: `POST .../documents/siteMessages` with `name`, `email`, `subject`
   (General question, Support, List my property, Press, Other), `message` (max 2000), `source`, `createdAt`.
 * Nothing else is stored. Each form has a hidden honeypot field, the contact form allows one message per 30 seconds per browser,
-  and if the request fails the visitor sees "We couldn't save that right now. Please try again or email us" (the site never crashes).
+  both forms apply a 30-second per-browser retry delay, and if a request fails the visitor sees a clear retry/contact message (the site never crashes). The browser delay is a usability safeguard, not server-side abuse protection.
 * The browser remembers only two small things in `localStorage` (that you joined; when you last sent a message). The "Your Privacy Choices"
   window explains this and can clear them.
 
