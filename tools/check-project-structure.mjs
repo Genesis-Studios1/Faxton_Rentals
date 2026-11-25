@@ -8,6 +8,7 @@ const firebase = JSON.parse(readFileSync("firebase.json", "utf8"));
 const adminHtml = readFileSync("admin/waitlist/index.html", "utf8");
 
 assert.match(admin, /^import\s+\{\s*CONFIG\s*\}/, "admin dashboard entry must be JavaScript");
+assert.match(admin, /value = "\'" \+ value/, "CSV exports must neutralise spreadsheet formulas");
 assert.doesNotMatch(admin, /rules_version\s*=|service cloud\.firestore/, "Firestore rules must not be stored as admin JavaScript");
 assert.match(rules, /^rules_version\s*=\s*['"]2['"];\s*service cloud\.firestore/, "firestore.rules must contain Firestore rules");
 assert.match(rules, /function isAdminSignedIn\(\)/, "Firestore rules must enforce admin authorization");
