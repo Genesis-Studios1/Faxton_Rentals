@@ -191,6 +191,20 @@ try {
   await page.locator('.site-header a[data-spa-waitlist]').click();
   await page.waitForURL((url) => url.pathname === "/" && url.hash === "#waitlist");
   await page.waitForSelector("#wl-name");
+  // Features-to-home SPA navigation must retain the homepage's dedicated waitlist layout.
+  await page.goto(base + "/features/", { waitUntil: "networkidle" });
+  await page.locator('.site-header a[data-spa-waitlist]').click();
+  await page.waitForURL((url) => url.pathname === "/" && url.hash === "#waitlist");
+  const waitlistLayout = await page.locator("#waitlist").evaluate((section) => ({
+    page: document.body.dataset.page,
+    stylesheet: [...document.styleSheets].some((sheet) => sheet.href?.includes("waitlist-renter.css")),
+    headerDisplay: getComputedStyle(section.querySelector(".wl__head")).display,
+    formColumns: getComputedStyle(section.querySelector(".wl__form")).gridTemplateColumns.split(" ").length
+  }));
+  assert.equal(waitlistLayout.page, "home", "Features waitlist CTA should load the homepage");
+  assert.equal(waitlistLayout.stylesheet, true, "homepage waitlist stylesheet should be available after SPA navigation");
+  assert.equal(waitlistLayout.headerDisplay, "grid", "homepage waitlist heading should retain its original grid layout");
+  assert.equal(waitlistLayout.formColumns, 4, "homepage waitlist form should retain its original four-column layout");
   await page.goto(base + "/contact/", { waitUntil: "networkidle" });
   await page.locator("a[data-get-app]").click();
   await page.waitForURL((url) => url.pathname === "/" && url.hash === "#download");
