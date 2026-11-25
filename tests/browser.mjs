@@ -294,7 +294,7 @@ if (QUICK) { await browser.close(); server.close(); console.log(`\n${pass} passe
   const links = await page.$$eval("#mobile-menu nav a", (a) => a.map((x) => [x.textContent.trim(), Math.round(x.getBoundingClientRect().height)]));
   ok(JSON.stringify(links.map((l) => l[0])) === JSON.stringify(["Home", "Features", "Contact us", "About us", "Billing"]), "mobile menu: the same five items", links.map((l) => l[0]).join(", "));
   ok(links.every((l) => l[1] >= 44), "mobile menu: every item is at least 44px tall", JSON.stringify(links));
-  ok((await page.textContent("#mobile-menu .btn-lime")).includes("Join the waitlist"), "mobile menu: has the Join the waitlist button");
+  ok((await page.textContent("#mobile-menu .btn-lime")).includes("Get Started"), "mobile menu: has the Get Started button");
   ok(await page.evaluate(() => document.getElementById("mobile-menu").contains(document.activeElement)), "mobile menu: focus moves inside");
   await page.screenshot({ path: join(OUT, "menu_open_390.png") });
   let inside = true; for (let i = 0; i < 12; i++) { await page.keyboard.press("Tab"); inside = inside && (await page.evaluate(() => document.getElementById("mobile-menu").contains(document.activeElement))); }
@@ -314,14 +314,14 @@ if (QUICK) { await browser.close(); server.close(); console.log(`\n${pass} passe
   await ctx.close();
 }
 
-// ====================================================================== 4. waitlist
+// ====================================================================== 4. Get Started
 const fillWl = async (page, { name = "Ada Obi", email = "Ada.Obi@Example.com", role = "agent", city = "Abuja" } = {}) => {
   await page.fill("#wl-name", name); await page.fill("#wl-email", email); await page.selectOption("#wl-role", role); await page.fill("#wl-city", city);
 };
 for (const w of [1440, 390]) {
   const { ctx, page, state } = await newPage(browser, { width: w });
   await goto(page, "/");
-  const f = (s) => `waitlist@${w}: ${s}`;
+  const f = (s) => `Get Started@${w}: ${s}`;
   ok((await page.inputValue("#wl-city")) === "Lagos", f("City defaults to Lagos"));
   ok((await page.$$eval("#ng-cities option", (o) => o.length)) > 30, f("city list has Nigerian cities"));
   ok((await page.$$eval("#wl-role option", (o) => o.map((x) => x.textContent))).join() === "Renter,Home owner,Agency,Agent", f("role options"));
@@ -336,13 +336,13 @@ for (const w of [1440, 390]) {
   await page.waitForSelector("[data-wl-done]:not([hidden])");
   const call = state.fsCalls[0];
   ok(state.fsCalls.length === 1 && call.method === "POST", f("exactly one POST is sent"));
-  ok(call.url.startsWith("https://firestore.googleapis.com/v1/projects/faxton-rentals/databases/(default)/documents/waitlist?documentId=" + sha32("ada.obi@example.com") + "&key="), f("posts to waitlist with the SHA-256 document id"), call.url);
+  ok(call.url.startsWith("https://firestore.googleapis.com/v1/projects/faxton-rentals/databases/(default)/documents/Get Started?documentId=" + sha32("ada.obi@example.com") + "&key="), f("posts to Get Started with the SHA-256 document id"), call.url);
   const body = JSON.parse(call.body).fields;
   ok(Object.keys(body).sort().join() === "city,createdAt,email,name,role,source" && body.source.stringValue === "website" && body.role.stringValue === "agent" && body.email.stringValue === "ada.obi@example.com" && /^\d{4}-\d\d-\d\dT[\d:.]+Z$/.test(body.createdAt.timestampValue), f("body has exactly the contract fields"), JSON.stringify(body));
   ok((await page.textContent("[data-wl-done] h2")).includes("You’re on the list"), f("success state says You're on the list"));
   ok((await page.$$eval("[data-wl-done] a, [data-wl-done] button", (e) => e.map((x) => x.textContent.trim()).join("|"))).match(/WhatsApp/) && (await page.$$eval("[data-wl-done] button", (e) => e.some((x) => /Copy link/.test(x.textContent)))), f("share on WhatsApp and copy link are offered"));
   const wa = await page.getAttribute("[data-wl-done] a.btn-lime", "href"); ok(/^https:\/\/wa\.me\/\?text=/.test(wa), f("WhatsApp link is a wa.me share link"), wa);
-  await page.screenshot({ path: join(OUT, `waitlist_success_${w}.png`) });
+  await page.screenshot({ path: join(OUT, `Get Started_success_${w}.png`) });
   await ctx.grantPermissions?.(["clipboard-read", "clipboard-write"]).catch(() => {});
   await page.click("[data-wl-done] [data-copy]"); await page.waitForTimeout(300);
   ok(await page.evaluate(() => document.querySelector(".fx-toast")?.classList.contains("is-on")), f("copy link shows a confirmation"));
@@ -362,26 +362,26 @@ for (const w of [1440, 390]) {
     await page.click("[data-wl-form] button[type=submit]");
     await page.waitForTimeout(700);
     const text = await page.evaluate(() => document.querySelector("[data-wl-done]:not([hidden])")?.innerText || document.querySelector("[data-wl-status]")?.innerText || "");
-    ok(text.includes(expect), `waitlist (${mode}): shows "${expect}"`, text.slice(0, 120));
+    ok(text.includes(expect), `Get Started (${mode}): shows "${expect}"`, text.slice(0, 120));
     if (mode !== "exists") {
-      ok(await page.isEnabled("[data-wl-form] button[type=submit]") && (await page.isVisible("[data-wl-form]")), `waitlist (${mode}): the form stays usable for a retry`);
-      ok((await page.evaluate(() => document.querySelector("[data-wl-status]").innerHTML)).includes("Contact page"), `waitlist (${mode}): points to the Contact page when no support email is set`);
+      ok(await page.isEnabled("[data-wl-form] button[type=submit]") && (await page.isVisible("[data-wl-form]")), `Get Started (${mode}): the form stays usable for a retry`);
+      ok((await page.evaluate(() => document.querySelector("[data-wl-status]").innerHTML)).includes("Contact page"), `Get Started (${mode}): points to the Contact page when no support email is set`);
       state.firestore = "ok"; await page.click("[data-wl-form] button[type=submit]"); await page.waitForSelector("[data-wl-done]:not([hidden])", { timeout: 4000 }).catch(() => {});
-      ok(await page.isVisible("[data-wl-done]"), `waitlist (${mode}): a retry succeeds once the service is back`);
-    } else ok(await page.evaluate(() => !localStorage.getItem("fxr.joined") === false), "waitlist (exists): remembered on this device");
+      ok(await page.isVisible("[data-wl-done]"), `Get Started (${mode}): a retry succeeds once the service is back`);
+    } else ok(await page.evaluate(() => !localStorage.getItem("fxr.joined") === false), "Get Started (exists): remembered on this device");
     await ctx.close();
   }
   const { ctx, page, state } = await newPage(browser, { width: 1440 });
   await goto(page, "/"); await fillWl(page);
   await page.evaluate(() => { document.querySelector('input[name="website"]').value = "http://spam.example"; });
   await page.click("[data-wl-form] button[type=submit]"); await page.waitForTimeout(400);
-  ok(state.fsCalls.length === 0, "waitlist (honeypot): a filled honeypot sends nothing");
+  ok(state.fsCalls.length === 0, "Get Started (honeypot): a filled honeypot sends nothing");
   await page.evaluate(() => localStorage.clear());
-  await goto(page, "/?role=agency#waitlist");
-  ok((await page.inputValue("#wl-role")) === "agency", "waitlist: ?role=agency preselects the role");
+  await goto(page, "/?role=agency#Get Started");
+  ok((await page.inputValue("#wl-role")) === "agency", "Get Started: ?role=agency preselects the role");
   await goto(page, "/");
   await page.click('a[data-role="owner"]'); await page.waitForTimeout(600);
-  ok((await page.inputValue("#wl-role")) === "owner", "waitlist: the 'Join as an owner' button sets the role");
+  ok((await page.inputValue("#wl-role")) === "owner", "Get Started: the 'Join as an owner' button sets the role");
   await ctx.close();
 }
 
