@@ -1,5 +1,6 @@
 /* Renter-first waitlist refresh — preserves Faxton Rentals' forest-green palette and existing form behaviour. */
 body[data-page="home"] .wl {
+  scroll-margin-top: 104px;
   margin-top: -176px;
   padding-bottom: clamp(44px, 6vw, 84px);
 }
