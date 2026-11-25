@@ -145,6 +145,16 @@ try {
   assert.equal(logoColors.wordmark, "rgb(18, 74, 56)", "the second logo colour should return to dark green after scrolling");
 
   await page.goto(base + "/", { waitUntil: "networkidle" });
+  // Homepage header CTA should scroll to the waitlist and leave the form clear of the fixed header.
+  await page.locator('.site-header a[data-spa-waitlist]').click();
+  await page.waitForFunction(() => location.hash === "#waitlist");
+  await page.waitForFunction(() => {
+    const section = document.querySelector("#waitlist");
+    const top = section?.getBoundingClientRect().top ?? -999;
+    return top >= 0 && top < 160;
+  });
+  assert.equal(await page.locator("#wl-name").evaluate((el) => el === document.activeElement), true,
+    "homepage waitlist CTA should focus the first field");
   await page.locator("#download").scrollIntoViewIfNeeded();
   await page.locator('.dlx-card[data-g="windows"] .dlx-head').click();
   await page.waitForSelector('.dlx-sheet a.dlx-opt[href]');
@@ -175,6 +185,11 @@ try {
   });
 
   // The footer action on a page without a download section should navigate home and open the picker.
+  await page.goto(base + "/contact/", { waitUntil: "networkidle" });
+  // The fixed header CTA on inner pages should return to the homepage waitlist.
+  await page.locator('.site-header a[data-spa-waitlist]').click();
+  await page.waitForURL((url) => url.pathname === "/" && url.hash === "#waitlist");
+  await page.waitForSelector("#wl-name");
   await page.goto(base + "/contact/", { waitUntil: "networkidle" });
   await page.locator("a[data-get-app]").click();
   await page.waitForURL((url) => url.pathname === "/" && url.hash === "#download");
@@ -220,6 +235,13 @@ try {
     "Privacy Policy should keep visible side margins on mobile: " + JSON.stringify(privacyLayout));
   assert.ok(privacyLayout.stylesheet?.includes("2026-11-03.1"),
     "Privacy Policy should load the refreshed stylesheet instead of a cached older version");
+  await mobilePage.goto(base + "/", { waitUntil: "networkidle" });
+  await mobilePage.locator(".menu-btn").click();
+  await mobilePage.locator('#mobile-menu a[data-spa-waitlist]').click();
+  await mobilePage.waitForFunction(() => location.hash === "#waitlist");
+  await mobilePage.waitForSelector("#wl-name");
+  assert.equal(await mobilePage.locator("#wl-name").isVisible(), true,
+    "mobile menu waitlist action should reveal the homepage form");
   await mobilePage.goto(base + "/features/", { waitUntil: "networkidle" });
   const featureLayout = await mobilePage.evaluate(() => ({
     viewport: window.innerWidth,
