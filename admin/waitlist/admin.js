@@ -11,11 +11,33 @@ $("#year").textContent = new Date().getFullYear();
 
 function message(el, text, isError = false) { el.textContent = text; el.classList.toggle("error", isError); el.hidden = !text; }
 function requiredConfig() { if (!API_KEY || !PROJECT_ID) throw new Error("Firebase configuration is missing. Check assets/site-config.js before using the admin dashboard."); }
-async function api(url, options = {}) {
+async function refreshSession() {
+  if (!currentUser?.refreshToken) throw new Error("Your admin session has expired. Please sign in again.");
+  const response = await fetch("https://securetoken.googleapis.com/v1/token?key=" + encodeURIComponent(API_KEY), {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({ grant_type: "refresh_token", refresh_token: currentUser.refreshToken }),
+    cache: "no-store",
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok || !result.id_token || !result.refresh_token) {
+    showLogin();
+    throw new Error("Your admin session has expired. Please sign in again.");
+  }
+  idToken = result.id_token;
+  currentUser = { ...currentUser, refreshToken: result.refresh_token, expiresIn: Number(result.expires_in || 3600) };
+}
+
+async function api(url, options = {}, retry = true) {
   const response = await fetch(url, { ...options, headers: { "Content-Type": "application/json", ...(idToken ? { Authorization: "Bearer " + idToken } : {}), ...(options.headers || {}) } });
+  if (response.status === 401 && retry && currentUser?.refreshToken) {
+    await refreshSession();
+    return api(url, options, false);
+  }
   const body = await response.json().catch(() => ({}));
   if (!response.ok) {
     const code = body?.error?.message || "REQUEST_FAILED";
+    if (response.status === 401) throw new Error("Your admin session has expired. Please sign in again.");
     if (response.status === 403 || /PERMISSION_DENIED|insufficient permissions/i.test(code)) throw new Error("Access denied by Firestore rules. Confirm this UID is an active admin and the admin-only rules are deployed.");
     if (/INVALID_LOGIN_CREDENTIALS|EMAIL_NOT_FOUND|INVALID_PASSWORD|INVALID_EMAIL/i.test(code)) throw new Error("Email or password was not recognised.");
     throw new Error(code.replaceAll("_", " ").toLowerCase());
