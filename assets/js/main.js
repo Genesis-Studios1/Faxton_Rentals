@@ -19,9 +19,12 @@ function initWaitlistLinks() {
     if (target.origin !== location.origin || target.pathname !== location.pathname || target.hash !== "#waitlist" || !section) return;
     event.preventDefault();
     if (location.href !== target.href) history.pushState({ fxWaitlist: true }, "", target.href);
-    section.scrollIntoView({
-      behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
-      block: "start"
+    const header = document.querySelector(".site-header");
+    const headerHeight = header?.getBoundingClientRect().height || 0;
+    const targetTop = window.scrollY + section.getBoundingClientRect().top - headerHeight - 12;
+    window.scrollTo({
+      top: Math.max(0, targetTop),
+      behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
     });
     window.setTimeout(() => section.querySelector('input[name="name"]')?.focus({ preventScroll: true }), 450);
   });
