@@ -100,6 +100,9 @@ body[data-page="home"] .wl__form .field select:focus {
   box-shadow: 0 0 0 4px rgba(35,132,91,.13);
 }
 body[data-page="home"] .wl__form .btn {
+  grid-column: 1 / -1;
+  justify-self: start;
+  width: min(404px, 100%);
   min-height: 54px;
   margin: 0;
   padding: 0 22px;
