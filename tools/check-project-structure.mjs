@@ -6,8 +6,11 @@ const rules = readFileSync("firestore.rules", "utf8");
 const fn = readFileSync("functions/index.js", "utf8");
 const firebase = JSON.parse(readFileSync("firebase.json", "utf8"));
 const adminHtml = readFileSync("admin/waitlist/index.html", "utf8");
+const waitlist = readFileSync("assets/js/waitlist.js", "utf8");
 
 assert.match(admin, /^import\s+\{\s*CONFIG\s*\}/, "admin dashboard entry must be JavaScript");
+assert.match(waitlist, /tooSoon\(lastAttempt\)/, "waitlist form must throttle rapid repeat submissions");
+assert.match(waitlist, /store\.set\(RATE_KEY, String\(lastAttempt\)\)/, "waitlist retry throttle must persist across page reloads");
 assert.match(admin, /value = "\'" \+ value/, "CSV exports must neutralise spreadsheet formulas");
 assert.doesNotMatch(admin, /rules_version\s*=|service cloud\.firestore/, "Firestore rules must not be stored as admin JavaScript");
 assert.match(rules, /^rules_version\s*=\s*['"]2['"];\s*service cloud\.firestore/, "firestore.rules must contain Firestore rules");
