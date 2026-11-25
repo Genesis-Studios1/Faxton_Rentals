@@ -23,7 +23,8 @@ function errorMessage(result) {
 export function initWaitlist() {
   const section = $("[data-waitlist]");
   const form = $("[data-wl-form]", section || document);
-  if (!section || !form) return;
+  if (!section || !form || section.dataset.waitlistInitialized === "true") return;
+  section.dataset.waitlistInitialized = "true";
   const panel = $("[data-wl-panel]", section), done = $("[data-wl-done]", section), status = $("[data-wl-status]", section);
   const submit = $("button[type=submit]", form);
   const submitHtml = submit.innerHTML;
