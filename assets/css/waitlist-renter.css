@@ -68,6 +68,7 @@ body[data-page="home"] .wl__sub {
   line-height: 1.7;
 }
 body[data-page="home"] .wl__form {
+  display: grid;
   position: relative;
   z-index: 1;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(140px, .7fr) auto;
