@@ -37,6 +37,14 @@ jobs:
           npm install --no-audit --no-fund
           npx playwright install --with-deps chromium
 
+      - name: Check JavaScript syntax and Firebase file integrity
+        run: |
+          node --check admin/waitlist/admin.js
+          node --check functions/index.js
+          node --check assets/js/main.js
+          node --check assets/js/spa.js
+          node tools/check-project-structure.mjs
+
       - name: Check the code, browser behaviours and links
         run: |
           node tests/waitlist.test.mjs
