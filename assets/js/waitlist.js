@@ -1,9 +1,10 @@
 // Waitlist card: validation, submit to Firestore (REST), and the success / already-on-the-list / error states.
 import { CONFIG } from "./config.js";
-import { ROLES, validateWaitlist, submitWaitlist } from "./waitlist-core.js";
+import { ROLES, validateWaitlist, submitWaitlist, tooSoon, secondsLeft } from "./waitlist-core.js";
 import { $, $$, esc, icon, store, toast, shareUrl } from "./ui.js";
 
 const KEY = "fxr.joined";
+const RATE_KEY = "fxr.lastWaitlistAttempt";
 const FIELDS = ["name", "email", "role", "city"];
 
 const rootPath = () => document.body.dataset.root || "";
@@ -91,6 +92,7 @@ export function initWaitlist() {
   // already joined on this device? show that instead of the form
   if (store.get(KEY)) showDone({ kind: "remembered" });
 
+  let lastAttempt = Number(store.get(RATE_KEY)) || 0;
   let busy = false;
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -106,7 +108,15 @@ export function initWaitlist() {
     }
     // honeypot: real people never see or fill this. Pretend it worked and send nothing.
     if (form.elements.website && form.elements.website.value.trim() !== "") { showDone({ kind: "joined", ...check.values }); return; }
+    lastAttempt = Math.max(lastAttempt, Number(store.get(RATE_KEY)) || 0);
+    if (tooSoon(lastAttempt)) {
+      status.className = "form-status is-info";
+      status.textContent = "Please wait " + secondsLeft(lastAttempt) + " seconds before trying again.";
+      return;
+    }
 
+    lastAttempt = Date.now();
+    store.set(RATE_KEY, String(lastAttempt));
     busy = true; submit.disabled = true;
     submit.innerHTML = `<span class="spinner" aria-hidden="true"></span> Joining…`;
     status.className = "form-status is-info"; status.textContent = "Saving your place on the list…";
