@@ -88,7 +88,12 @@ $("#role-filter").addEventListener("change", render);
 $("#export").addEventListener("click", () => {
   const query = $("#search").value.trim().toLowerCase(), role = $("#role-filter").value;
   const filtered = records.filter(r => (role === "all" || r.role === role) && [r.name,r.email,r.city,prettyRole(r.role)].some(v => String(v).toLowerCase().includes(query)));
-  const csvCell = (v) => '"' + String(v ?? "").replace(/"/g, '""') + '"';
+  const csvCell = (v) => {
+    let value = String(v ?? "");
+    // Prevent spreadsheet formula execution when exported data is opened in Excel or Sheets.
+    if (/^[\\u0000-\\u0020]*[=+\\-@]/.test(value)) value = "'" + value;
+    return '"' + value.replace(/"/g, '""') + '"';
+  };
   const csv = [["Name","Email","Type","City","Joined"], ...filtered.map(r => [r.name,r.email,prettyRole(r.role),r.city,dateLabel(r.createdAt)])].map(row => row.map(csvCell).join(",")).join("\r\n");
   const blob = new Blob(["\uFEFF", csv], { type: "text/csv;charset=utf-8;" }), url = URL.createObjectURL(blob), a = document.createElement("a");
   a.href = url; a.download = "faxton-waitlist-" + new Date().toISOString().slice(0,10) + ".csv"; document.body.append(a); a.click(); a.remove(); URL.revokeObjectURL(url);
