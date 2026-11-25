@@ -280,7 +280,8 @@ try {
   }));
   assert.ok(featureLayout.document <= featureLayout.viewport + 1,
     "Features page should not overflow horizontally on mobile: " + JSON.stringify(featureLayout));
-  await mobilePage.locator('.site-header a[data-spa-waitlist]').click();
+  await mobilePage.locator('.menu-btn').click();
+  await mobilePage.locator('#mobile-menu a[data-spa-waitlist]').click();
   await mobilePage.waitForURL((url) => url.pathname === "/" && url.hash === "#waitlist");
   const mobileWaitlist = await mobilePage.locator("#waitlist").evaluate((section) => ({
     stylesheet: [...document.styleSheets].some((sheet) => sheet.href?.includes("waitlist-renter.css")),
