@@ -200,7 +200,7 @@ try {
       return { top: Math.round(rect.top), bottom: Math.round(rect.bottom) };
     }),
     submit: (() => {
-      const button = section.querySelector("[data-wl-app-link");
+      const button = section.querySelector("[data-wl-app-link]");
       const rect = button.getBoundingClientRect();
       const style = getComputedStyle(button);
       return { top: Math.round(rect.top), gridColumnStart: style.gridColumnStart, gridColumnEnd: style.gridColumnEnd };
