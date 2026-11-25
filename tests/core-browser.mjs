@@ -153,6 +153,7 @@ try {
     const top = section?.getBoundingClientRect().top ?? -999;
     return top >= 0 && top < 160;
   });
+  await page.waitForFunction(() => document.activeElement?.id === "wl-name");
   assert.equal(await page.locator("#wl-name").evaluate((el) => el === document.activeElement), true,
     "homepage waitlist CTA should focus the first field");
   await page.locator("#download").scrollIntoViewIfNeeded();
