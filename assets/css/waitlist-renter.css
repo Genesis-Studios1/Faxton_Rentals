@@ -142,3 +142,21 @@ body[data-page="home"] .wl__done { position: relative; z-index: 1; }
   body[data-page="home"] .wl__form .field input,
   body[data-page="home"] .wl__form .field select { transition: none; }
 }
+
+
+/* The website now hands registration to the Faxton app; only the account role is chosen here. */
+body[data-page="home"] .wl__signup-form {
+  grid-template-columns: minmax(0, 300px) minmax(220px, 404px);
+  align-items: end;
+}
+body[data-page="home"] .wl__signup-form .btn {
+  grid-column: auto;
+  justify-self: stretch;
+  width: 100%;
+}
+@media (max-width: 900px) {
+  body[data-page="home"] .wl__signup-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  body[data-page="home"] .wl__signup-form { grid-template-columns: minmax(0, 1fr); }
+}
