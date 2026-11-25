@@ -91,7 +91,7 @@ $("#export").addEventListener("click", () => {
   const csvCell = (v) => {
     let value = String(v ?? "");
     // Prevent spreadsheet formula execution when exported data is opened in Excel or Sheets.
-    if (/^[\\u0000-\\u0020]*[=+\\-@]/.test(value)) value = "'" + value;
+    if (/^[\u0000-\u0020]*[=+\-@]/.test(value)) value = "'" + value;
     return '"' + value.replace(/"/g, '""') + '"';
   };
   const csv = [["Name","Email","Type","City","Joined"], ...filtered.map(r => [r.name,r.email,prettyRole(r.role),r.city,dateLabel(r.createdAt)])].map(row => row.map(csvCell).join(",")).join("\r\n");
