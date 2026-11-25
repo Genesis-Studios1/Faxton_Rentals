@@ -12,6 +12,8 @@ assert.match(admin, /^import\s+\{\s*CONFIG\s*\}/, "admin dashboard entry must be
 assert.match(waitlist, /tooSoon\(lastAttempt\)/, "waitlist form must throttle rapid repeat submissions");
 assert.match(waitlist, /store\.set\(RATE_KEY, String\(lastAttempt\)\)/, "waitlist retry throttle must persist across page reloads");
 assert.match(admin, /value = "\'" \+ value/, "CSV exports must neutralise spreadsheet formulas");
+assert.match(admin, /securetoken\\.googleapis\\.com\\/v1\\/token/, "admin dashboard must refresh expired Firebase ID tokens");
+assert.match(admin, /$("#password")\\.value = ""/, "admin password field must be cleared after sign-in");
 assert.doesNotMatch(admin, /rules_version\s*=|service cloud\.firestore/, "Firestore rules must not be stored as admin JavaScript");
 assert.match(rules, /^rules_version\s*=\s*['"]2['"];\s*service cloud\.firestore/, "firestore.rules must contain Firestore rules");
 assert.match(rules, /function isAdminSignedIn\(\)/, "Firestore rules must enforce admin authorization");
