@@ -26,7 +26,7 @@ function initWaitlistLinks() {
       top: Math.max(0, targetTop),
       behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
     });
-    window.setTimeout(() => section.querySelector('input[name="name"]')?.focus({ preventScroll: true }), 450);
+    window.setTimeout(() => section.querySelector('[data-wl-role]')?.focus({ preventScroll: true }), 450);
   });
 }
 let pageBooting = false;
