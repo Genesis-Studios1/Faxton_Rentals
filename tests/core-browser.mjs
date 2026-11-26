@@ -251,9 +251,9 @@ try {
   await mobilePage.locator(".menu-btn").click();
   await mobilePage.locator('#mobile-menu a[data-spa-waitlist]').click();
   await mobilePage.waitForFunction(() => location.hash === "#waitlist");
-  await mobilePage.waitForSelector("#wl-role");
-  assert.equal(await mobilePage.locator("#wl-role").isVisible(), true,
-    "mobile menu signup action should reveal the app handoff");
+  await mobilePage.waitForSelector("[data-app-onboarding]");
+  assert.equal(await mobilePage.locator("[data-app-onboarding]").isVisible(), true,
+    "mobile menu Get Started action should reveal the onboarding handoff");
   await mobilePage.goto(base + "/features/", { waitUntil: "networkidle" });
   const featureLayout = await mobilePage.evaluate(() => ({
     viewport: window.innerWidth,
