@@ -61,6 +61,9 @@ jobs:
       - name: Point canonical links, share cards and the sitemap at the real address
         run: node tools/set-site-url.mjs "${{ steps.pages.outputs.base_url }}" _site
 
+      - name: Stamp deployment version for open tabs
+        run: node tools/stamp-deployment-version.mjs "$GITHUB_SHA" _site
+
       - name: Upload the site
         uses: actions/upload-pages-artifact@v5
         with:
