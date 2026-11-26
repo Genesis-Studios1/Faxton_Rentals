@@ -294,7 +294,7 @@ if (QUICK) { await browser.close(); server.close(); console.log(`\n${pass} passe
   const links = await page.$$eval("#mobile-menu nav a", (a) => a.map((x) => [x.textContent.trim(), Math.round(x.getBoundingClientRect().height)]));
   ok(JSON.stringify(links.map((l) => l[0])) === JSON.stringify(["Home", "Features", "Contact us", "About us", "Billing"]), "mobile menu: the same five items", links.map((l) => l[0]).join(", "));
   ok(links.every((l) => l[1] >= 44), "mobile menu: every item is at least 44px tall", JSON.stringify(links));
-  ok((await page.textContent("#mobile-menu .btn-lime")).includes("Join the waitlist"), "mobile menu: has the Join the waitlist button");
+  ok((await page.textContent("#mobile-menu .btn-lime")).includes("Get Started"), "mobile menu: has the Get Started button");
   ok(await page.evaluate(() => document.getElementById("mobile-menu").contains(document.activeElement)), "mobile menu: focus moves inside");
   await page.screenshot({ path: join(OUT, "menu_open_390.png") });
   let inside = true; for (let i = 0; i < 12; i++) { await page.keyboard.press("Tab"); inside = inside && (await page.evaluate(() => document.getElementById("mobile-menu").contains(document.activeElement))); }
