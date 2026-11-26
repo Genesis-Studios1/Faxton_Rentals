@@ -1,10 +1,49 @@
 import { initHeader } from "./nav.js?v=2026-10-30.7";
 import { initReveal } from "./reveal.js?v=2026-10-30.4";
 import { initFooter } from "./footer.js?v=2026-10-30.5";
-import { initSpaRouter } from "./spa.js?v=2026-10-30.5";
+import { initSpaRouter } from "./spa.js?v=2026-11-26.2";
 import { initDownload } from "./download.js?v=2026-11-03.1";
 
 const has = (sel) => document.querySelector(sel);
+
+// Reload an already-open tab after a newer GitHub Pages deployment is published.
+function initDeploymentRefresh() {
+  const currentBuild = document.documentElement.dataset.fxBuild;
+  if (!currentBuild || document.documentElement.dataset.fxBuildWatcher === "true") return;
+  document.documentElement.dataset.fxBuildWatcher = "true";
+
+  let checking = false;
+  const checkForUpdate = async () => {
+    if (checking || document.visibilityState !== "visible") return;
+    checking = true;
+    try {
+      const versionUrl = new URL("/version.json", location.origin);
+      versionUrl.searchParams.set("t", String(Date.now()));
+      const response = await fetch(versionUrl, {
+        cache: "no-store",
+        credentials: "same-origin",
+        headers: { "Cache-Control": "no-cache" }
+      });
+      if (!response.ok) return;
+      const latest = await response.json();
+      if (latest.version && latest.version !== currentBuild) {
+        document.documentElement.dataset.fxReloading = "true";
+        location.reload();
+      }
+    } catch {
+      // A temporary network failure should never interrupt normal site use.
+    } finally {
+      checking = false;
+    }
+  };
+
+  window.setInterval(checkForUpdate, 60_000);
+  window.addEventListener("focus", checkForUpdate);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") checkForUpdate();
+  });
+  window.setTimeout(checkForUpdate, 10_000);
+}
 
 // Keep waitlist entry points reliable on the homepage, including the fixed header and mobile menu.
 function initWaitlistLinks() {
@@ -43,7 +82,6 @@ function bootPage() {
   if (pageBooting) return;
   pageBooting = true;
   try {
-    // Downloads are a primary action: initialise them before optional page features.
     safely("downloads", initDownload);
     safely("header", initHeader);
     safely("footer", initFooter);
@@ -57,6 +95,7 @@ function bootPage() {
 }
 
 function boot() {
+  safely("deployment refresh", initDeploymentRefresh);
   safely("waitlist navigation", initWaitlistLinks);
   safely("page navigation", initSpaRouter);
   bootPage();
