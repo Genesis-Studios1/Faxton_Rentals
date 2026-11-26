@@ -17,7 +17,9 @@ function initDeploymentRefresh() {
     if (checking || document.visibilityState !== "visible") return;
     checking = true;
     try {
-      const response = await fetch(new URL("/version.json", location.origin), {
+      const versionUrl = new URL("/version.json", location.origin);
+      versionUrl.searchParams.set("t", String(Date.now()));
+      const response = await fetch(versionUrl, {
         cache: "no-store",
         credentials: "same-origin",
         headers: { "Cache-Control": "no-cache" }
