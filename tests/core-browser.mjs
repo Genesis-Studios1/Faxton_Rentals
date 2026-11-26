@@ -141,9 +141,9 @@ try {
     const top = section?.getBoundingClientRect().top ?? -999;
     return top >= 0 && top < 160;
   });
-  await page.waitForFunction(() => document.activeElement?.id === "wl-role");
-  assert.equal(await page.locator("#wl-role").evaluate((el) => el === document.activeElement), true,
-    "homepage signup CTA should focus the account-role selector");
+  await page.waitForFunction(() => document.activeElement?.matches("[data-app-onboarding]"));
+  assert.equal(await page.locator("[data-app-onboarding]").evaluate((el) => el === document.activeElement), true,
+    "homepage Get Started CTA should focus the app onboarding link");
   await page.locator("#download").scrollIntoViewIfNeeded();
   await page.locator('.dlx-card[data-g="windows"] .dlx-head').click();
   await page.waitForSelector('.dlx-sheet a.dlx-opt[href]');
@@ -162,30 +162,25 @@ try {
     "Download now should open the detected Windows picker");
   await page.locator(".dlx-sheet .dlx-x").click();
 
-  // Website signup must hand off to the real app instead of attempting an anonymous Firestore write.
-  await page.locator("#wl-role").selectOption("owner");
-  assert.equal(await page.locator("[data-wl-app-link]").getAttribute("href"),
-    "https://faxton-rentals.web.app/app/#/signup?role=landlord",
-    "home-owner signup should open the app with its internal landlord role");
-  await page.locator("#wl-role").selectOption("agency");
-  assert.equal(await page.locator("[data-wl-app-link]").getAttribute("href"),
-    "https://faxton-rentals.web.app/app/#/signup?role=agency",
-    "business signup should preserve the agency role");
-  await page.locator("#wl-role").selectOption("agent");
-  assert.equal(await page.locator("[data-wl-app-link]").getAttribute("href"),
-    "https://faxton-rentals.web.app/app/#/signup?role=agent",
-    "agent signup should preserve the agent role");
-  await page.locator("#wl-role").selectOption("renter");
-  assert.equal(await page.locator("[data-wl-app-link]").getAttribute("href"),
-    "https://faxton-rentals.web.app/app/#/signup?role=renter",
-    "renter signup should open the app signup route");
+  // Get Started must open the app's first intro screen, before the signup page.
+  const onboardingUrl = "https://faxton-rentals.web.app/app/#/onboarding/1";
+  assert.equal(await page.locator("[data-app-onboarding]").getAttribute("href"), onboardingUrl,
+    "homepage Get Started should open onboarding screen 1");
+  assert.equal(await page.locator(".roles a[data-app-role]").count(), 4,
+    "all four role cards should keep their Get Started links");
+  for (const link of await page.locator(".roles a[data-app-role]").all()) {
+    assert.equal(await link.getAttribute("href"), onboardingUrl,
+      "role card Get Started links should not skip the introduction");
+  }
+  assert.equal(await page.locator("#wl-role").count(), 0,
+    "the website should not ask users to choose a role before the app's onboarding");
 
   // The footer action on a page without a download section should navigate home and open the picker.
   await page.goto(base + "/contact/", { waitUntil: "networkidle" });
   // The fixed header CTA on inner pages should return to the homepage waitlist.
   await page.locator('.site-header a[data-spa-waitlist]').click();
   await page.waitForURL((url) => url.pathname === "/" && url.hash === "#waitlist");
-  await page.waitForSelector("#wl-role");
+  await page.waitForSelector("[data-app-onboarding]");
   // Features-to-home SPA navigation must retain the homepage's dedicated waitlist layout.
   await page.goto(base + "/features/", { waitUntil: "networkidle" });
   await page.locator('.site-header a[data-spa-waitlist]').click();
@@ -195,31 +190,17 @@ try {
     stylesheet: [...document.styleSheets].some((sheet) => sheet.href?.includes("waitlist-renter.css")),
     headerDisplay: getComputedStyle(section.querySelector(".wl__head")).display,
     formDisplay: getComputedStyle(section.querySelector(".wl__form")).display,
-    fields: [...section.querySelectorAll(".wl__form > .field")].map((field) => {
-      const rect = field.getBoundingClientRect();
-      const control = field.querySelector("input, select, textarea");
-      const controlRect = control?.getBoundingClientRect();
-      return {
-        top: Math.round(rect.top),
-        bottom: Math.round(rect.bottom),
-        controlTop: controlRect ? Math.round(controlRect.top) : null
-      };
-    }),
-    submit: (() => {
-      const button = section.querySelector("[data-wl-app-link]");
-      const rect = button.getBoundingClientRect();
-      const style = getComputedStyle(button);
-      return { top: Math.round(rect.top), gridColumnStart: style.gridColumnStart, gridColumnEnd: style.gridColumnEnd };
-    })()
+    fields: section.querySelectorAll(".wl__form > .field").length,
+    href: section.querySelector("[data-app-onboarding]")?.getAttribute("href"),
+    visible: !!section.querySelector("[data-app-onboarding]")?.getBoundingClientRect().width
   }));
-  assert.equal(waitlistLayout.page, "home", "Features waitlist CTA should load the homepage");
-  assert.equal(waitlistLayout.stylesheet, true, "homepage waitlist stylesheet should be available after SPA navigation");
-  assert.equal(waitlistLayout.headerDisplay, "grid", "homepage waitlist heading should retain its original grid layout");
-  assert.equal(waitlistLayout.formDisplay, "grid", "homepage waitlist form should retain its grid layout");
-  assert.equal(waitlistLayout.fields.length, 1, "the signup handoff should only ask for the account role");
-  assert.equal(waitlistLayout.submit.gridColumnStart, "auto", "the app signup link should sit beside the role selector");
-  assert.equal(waitlistLayout.submit.gridColumnEnd, "auto", "the app signup link should not span a separate form row");
-  assert.equal(waitlistLayout.submit.top, waitlistLayout.fields[0].controlTop, "the app signup link should align with the role selector control, below its label");
+  assert.equal(waitlistLayout.page, "home", "Features Get Started CTA should load the homepage");
+  assert.equal(waitlistLayout.stylesheet, true, "homepage onboarding CTA stylesheet should be available after SPA navigation");
+  assert.equal(waitlistLayout.headerDisplay, "grid", "homepage onboarding heading should retain its original grid layout");
+  assert.equal(waitlistLayout.formDisplay, "grid", "homepage onboarding CTA should retain its grid layout");
+  assert.equal(waitlistLayout.fields, 0, "the marketing site should not collect redundant role details");
+  assert.equal(waitlistLayout.href, "https://faxton-rentals.web.app/app/#/onboarding/1", "homepage CTA should open the first onboarding screen");
+  assert.equal(waitlistLayout.visible, true, "onboarding CTA should be visible");
   await page.goto(base + "/contact/", { waitUntil: "networkidle" });
   await page.locator("a[data-get-app]").click();
   await page.waitForURL((url) => url.pathname === "/" && url.hash === "#download");
@@ -287,14 +268,15 @@ try {
   const mobileWaitlist = await mobilePage.locator("#waitlist").evaluate((section) => ({
     stylesheet: [...document.styleSheets].some((sheet) => sheet.href?.includes("waitlist-renter.css")),
     formDisplay: getComputedStyle(section.querySelector(".wl__form")).display,
-    fieldTops: [...section.querySelectorAll(".wl__form > .field")].map((field) => Math.round(field.getBoundingClientRect().top)),
-    submitTop: Math.round(section.querySelector("[data-wl-app-link]").getBoundingClientRect().top)
+    fieldCount: section.querySelectorAll(".wl__form > .field").length,
+    href: section.querySelector("[data-app-onboarding]")?.getAttribute("href"),
+    visible: !!section.querySelector("[data-app-onboarding]")?.getBoundingClientRect().width
   }));
-  assert.equal(mobileWaitlist.stylesheet, true, "mobile Features CTA should load the homepage waitlist stylesheet");
-  assert.equal(mobileWaitlist.formDisplay, "grid", "mobile waitlist should retain its grid layout");
-  assert.equal(mobileWaitlist.fieldTops.length, 1, "mobile signup handoff should only show the role selector");
-  assert.ok(mobileWaitlist.submitTop > mobileWaitlist.fieldTops[0],
-    "mobile app signup link should follow the role selector");
+  assert.equal(mobileWaitlist.stylesheet, true, "mobile Features CTA should load the onboarding stylesheet");
+  assert.equal(mobileWaitlist.formDisplay, "grid", "mobile onboarding CTA should retain its grid layout");
+  assert.equal(mobileWaitlist.fieldCount, 0, "mobile site should not ask for redundant role details");
+  assert.equal(mobileWaitlist.href, "https://faxton-rentals.web.app/app/#/onboarding/1", "mobile CTA should open onboarding screen 1");
+  assert.equal(mobileWaitlist.visible, true, "mobile onboarding CTA should be visible");
   await mobileContext.close();
   process.stdout.write("PASS: navbar scroll state, device picker, footer entry point, release fallback, and mobile layouts\\n");
 } finally {
